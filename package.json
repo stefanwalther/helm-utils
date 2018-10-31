@@ -1,0 +1,26 @@
+{
+  "name": "helm-utils",
+  "version": "0.1.0",
+  "description": "Some missing utils when working with helm.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefanwalther/helm-utils.git"
+  },
+  "keywords": [
+    "helm"
+  ],
+  "author": "Stefan Walther <swr.nixda@gmail.com> (http://qliksite.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stefanwalther/helm-utils/issues"
+  },
+  "homepage": "https://github.com/stefanwalther/helm-utils#readme"
+}
