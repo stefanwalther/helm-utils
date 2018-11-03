@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 const util = require('util');
 
-describe('[unit] getManifestFromChart()', () => {
+describe('[unit] => getManifestFromChart()', () => {
   const FIXTURE_PATH = path.resolve(__dirname, './../fixtures/sample-1');
 
   it('returns an error if `opts.loadFromDir` is not defined', () => {
@@ -18,7 +18,7 @@ describe('[unit] getManifestFromChart()', () => {
     return expect(HelmUtils.getManifestFromChart(opts)).to.be.rejectedWith(Error, 'Directory defined in `opts.loadFromDir` does not exist.');
   });
 
-  it.only('returns an object', async () => {
+  it('returns an object', async () => {
     const opts = {
       loadFromDir: FIXTURE_PATH
     };

@@ -1,35 +1,56 @@
-const HelmUtils = require('./../../src/index');
+const helmUtils = require('./../../src/index');
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const _ = require('lodash');
 
 describe('[integration-test]', () => {
-  describe('downloadChartRepo()', () => {
-    it('downloads a chart tgz', async () => {
-      let utils = new HelmUtils();
-      const chartName = 'qsefe-0.1.36.tgz';
-      const opts = {
-        srcUrl: `https://qlik.bintray.com/stable/${chartName}`,
-        savePath: os.tmpdir()
-      };
-      let result = await HelmUtils.downloadChartRepo(opts);
+
+  describe('qlik.bintray.com/stable', () => {
+    const chartName = 'qsefe-0.1.36.tgz';
+    const opts = {
+      srcUrl: `https://qlik.bintray.com/stable/${chartName}`,
+      savePath: os.tmpdir()
+    };
+
+    it('downloads a chart tgz and returns an object', async () => {
+      let result = await helmUtils.downloadChartRepo(opts);
       expect(result).to.have.property('srcUrl').to.equal(opts.srcUrl);
       expect(result).to.have.property('savePath').to.equal(opts.savePath);
       expect(result).to.have.property('saveToFile').to.equal(chartName);
       expect(result).to.have.property('fullPath').to.equal(path.resolve(opts.savePath, chartName));
     });
+
+    it('downloads the chart and saves it to the expected folder', async () => {
+      let result = await helmUtils.downloadChartRepo(opts);
+      expect(fs.existsSync(result.fullPath)).to.be.true;
+    });
+
+    it('unzips properly', async() => {
+      let result = await helmUtils.downloadChartRepo(opts);
+      const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
+      let unzipResult = await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      expect(fs.existsSync(unzipDir));
+    });
+
+    it('can return a proper manifest', async () => {
+      let result = await helmUtils.downloadChartRepo(opts);
+      const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
+      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
+      expect(manifest).to.be.an('object');
+      expect(manifest).to.have.a.property('name').to.be.equal('qsefe-0.1.36');
+      expect(manifest).to.have.a.property('children').to.be.an('array');
+
+    });
+    it('returns the images being used', async() => {
+      let result = await helmUtils.downloadChartRepo(opts);
+      const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
+      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
+      let images = await helmUtils.getImagesFromManifest(manifest);
+      expect(images).to.exist.and.to.be.an('array');
+    });
   });
 
-  describe('unzip()', () => {
-
-  });
-
-  xit('returns the images', async () => {
-    let utils = new HelmUtils();
-    let images = await utils.getImages();
-    expect(images).to.be.an('array');
-    expect(images).to.contain('qlik-docker-qsefe.bintray.io/collections:0.1.4');
-    // console.log(images);
-    // console.log('--');
-    // console.log(images.join('\n'));
-  });
 });

@@ -1,6 +1,6 @@
 const HelmUtils = require('./../../src/index');
 
-describe('[unit-test] - helm-utils', () => {
+describe('[unit-test] => helm-utils', () => {
   it('exposes some static functions', () => {
     expect(HelmUtils).to.have.property('downloadChartRepo').to.be.a('function');
     expect(HelmUtils).to.have.property('unzip').to.be.a('function');
@@ -11,12 +11,6 @@ describe('[unit-test] - helm-utils', () => {
   });
 
   describe('as an instance', () => {
-    let htmlUtils;
-
-    beforeEach(() => {
-      helmUtils = new HelmUtils();
-    });
-
     describe('downloadChartRepo()', () => {
 
     });

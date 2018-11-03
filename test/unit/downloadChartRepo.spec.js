@@ -1,6 +1,6 @@
 const HelmUtils = require('./../../src/index');
 
-describe('[unit-test] - downloadChartRepo', () => {
+describe('[unit-test] => downloadChartRepo()', () => {
   it('should expose some methods', () => {
     expect(HelmUtils).to.have.a.property('downloadChartRepo').to.be.a('function');
   });

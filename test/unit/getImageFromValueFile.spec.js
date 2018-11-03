@@ -1,6 +1,6 @@
 const HelmUtils = require('./../../src/helm-utils');
 
-describe('[unit] getImageFromValueFile()', () => {
+describe('[unit] => getImageFromValueFile()', () => {
   it('properly handles an object', () => {
     const valuesYaml = {
       image: {

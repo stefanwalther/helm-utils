@@ -18,6 +18,7 @@ class HelmUtils {
    *
    * @return {Promise<*>}
    *
+   * @async
    * @static
    */
   static async downloadChartRepo(opts) {
@@ -64,10 +65,12 @@ class HelmUtils {
   }
 
   /**
+   * Unzip (tar) a given file to a specific folder.
    *
    * @param opts
    * @returns {Promise<void>}
    *
+   * @async
    * @static
    */
   static async unzip(opts) {
@@ -82,17 +85,18 @@ class HelmUtils {
       throw new Error('`opts.target` is not defined.');
     }
 
-    this._ensureDir(this.tempPath);
-    const targetPath = path.resolve(__dirname, '.temp/foo');
-    this._ensureDir(targetPath);
+    this._ensureDir(opts.target);
 
-    fs.createReadStream(path.resolve(this.tempPath, this.targetFile))
+    fs.createReadStream(opts.src)
       .on('error', console.error)
       .pipe(zlib.Unzip()) // eslint-disable-line new-cap
+      .on('error', (e) => console.error(e))
       .pipe(tar.x({
-        cwd: targetPath,
+        cwd: opts.target,
         strip: 1
-      }));
+      }))
+      .on('error', (e) => console.error(e))
+    ;
   }
 
   /**
@@ -100,6 +104,7 @@ class HelmUtils {
    *
    * @param {object} opts - Options for `getManifestFromChart`.
    * @param {string} opts.loadFromDir - The (local) directory from which the chart should be loaded from.
+   *
    * @returns {Promise<void>}
    */
   static async getManifestFromChart(opts) {
@@ -135,7 +140,7 @@ class HelmUtils {
       info.type = 'file';
       info.isDir = false;
       info.extname = path.extname(filePath);
-      if (path.extname(filePath) === '.yaml') {
+      if (path.basename(filePath) === 'values.yaml') {
         info.object = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'));
       }
     }
@@ -146,13 +151,26 @@ class HelmUtils {
   /**
    * Returns an array of all images from a given chart manifest.
    */
-  static getImages(chartManifest) {
+  static getImagesFromManifest(chartManifest) {
 
     if (!chartManifest || _.isEmpty(chartManifest)) {
       throw new Error('Argument `chartManifest` is not defined.');
     }
 
-    return HelmUtils._getImagesFromObj(chartManifest);
+    let images = HelmUtils._getImagesFromObj(chartManifest);
+
+    // Remove duplicates
+    let uniqueImages = _.uniqBy(images, (item) => {
+      return item
+    });
+
+    // Sort results
+    let sortedImages = _.sortBy(uniqueImages, (item) => {
+      return item
+    });
+
+    // Return
+    return sortedImages;
   }
 
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
@@ -176,35 +194,6 @@ class HelmUtils {
       return acc;
     }, [])
 
-  }
-
-
-  // Todo: Get this done
-  async getImagesFromCharts() {
-    let images = [];
-
-    const extractPath = path.resolve(__dirname, '.temp/foo');
-    const chartsPath = path.resolve(extractPath, 'charts');
-
-    let paths = fs.readdirSync(chartsPath);
-    paths.forEach(chartDir => {
-      const chartFile = path.resolve(chartsPath, chartDir, 'values.yaml');
-      const chartContent = yaml.safeLoad(fs.readFileSync(chartFile, 'utf8'));
-
-      let image = null;
-      try {
-        image = this._getImageFromValuesObject(chartFile, chartContent.image);
-        if (image) {
-          if (images.indexOf(image) === -1) {
-            images.push(image);
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    });
-
-    return images;
   }
 
   /**
