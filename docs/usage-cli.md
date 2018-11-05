@@ -1,6 +1,9 @@
 
 ### `get-images <chart-url>`
 
+<details>
+  <summary>Details</summary>
+
 ```bash
 $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
 ```
@@ -29,12 +32,18 @@ Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
 - qlik-docker-qsefe.bintray.io/users:0.1.6
 - qlikcore/mira:0.3.1
 - traefik
-```
+```  
+</details>
+
 
 ### `help`
 
+<details>
+  <summary>Details</summary>
 Show the help for `helm-utils`.
 
 ```
 $ helm-utils hellp
-```
+```  
+</details>
+
