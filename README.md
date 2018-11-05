@@ -6,53 +6,68 @@
 
 ## Purpose
 
-_helm-utils_
+_helm-utils_ provides some complementary utilities for [helm](https://helm.sh), both as CLI-tool and node.js library.
 
-_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [issue]({= bugs.url}). Thx.
+_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [issue](https://github.com/stefanwalther/helm-utils/issues). Thx._
 
 ## Install
 
-```
+```bash
 $ npm install -g helm-utils
 ```
 
-## Usage
+## Usage as CLI tool
 
-### Usage as CLI tool
+### `get-images <chart-url>`
 
-## Get Images (`get-images <chart-url>`)
+<details>
+  <summary>Details & Example</summary>
+  
+  Return all docker images from a given helm-chart.
+
+  ```bash
+  $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
+  ```
+  
+  returns
+  
+  ```bash
+  Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
+  (18 images)
+  
+  - bitnami/mongodb:3.7.1-r0
+  - bitnami/redis:4.0.10
+  - bitnami/redis:4.0.9
+  - qlik-docker-qsefe.bintray.io/collections:0.1.16
+  - qlik-docker-qsefe.bintray.io/edge-auth:0.6.3
+  - qlik-docker-qsefe.bintray.io/engine:12.216.0
+  - qlik-docker-qsefe.bintray.io/feature-flags:0.2.1
+  - qlik-docker-qsefe.bintray.io/hub:1.0.4
+  - qlik-docker-qsefe.bintray.io/licenses:1.0.5
+  - qlik-docker-qsefe.bintray.io/locale:1.0.0
+  - qlik-docker-qsefe.bintray.io/policy-decision-service:1.1.2
+  - qlik-docker-qsefe.bintray.io/qix-sessions:0.1.6
+  - qlik-docker-qsefe.bintray.io/resource-library:1.6.1
+  - qlik-docker-qsefe.bintray.io/sense-client:5.43.0
+  - qlik-docker-qsefe.bintray.io/tenants:0.3.2
+  - qlik-docker-qsefe.bintray.io/users:0.1.6
+  - qlikcore/mira:0.3.1
+  - traefik
+  ```  
+</details>
+
+### `help`
+
+<details>
+  <summary>Details & Example</summary>
+Show the help for `helm-utils`.
 
 ```
-$ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
-```
+$ helm-utils hellp
+```  
+</details>
 
-returns
-
-```
-Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
-(18 images)
-
-- bitnami/mongodb:3.7.1-r0
-- bitnami/redis:4.0.10
-- bitnami/redis:4.0.9
-- qlik-docker-qsefe.bintray.io/collections:0.1.16
-- qlik-docker-qsefe.bintray.io/edge-auth:0.6.3
-- qlik-docker-qsefe.bintray.io/engine:12.216.0
-- qlik-docker-qsefe.bintray.io/feature-flags:0.2.1
-- qlik-docker-qsefe.bintray.io/hub:1.0.4
-- qlik-docker-qsefe.bintray.io/licenses:1.0.5
-- qlik-docker-qsefe.bintray.io/locale:1.0.0
-- qlik-docker-qsefe.bintray.io/policy-decision-service:1.1.2
-- qlik-docker-qsefe.bintray.io/qix-sessions:0.1.6
-- qlik-docker-qsefe.bintray.io/resource-library:1.6.1
-- qlik-docker-qsefe.bintray.io/sense-client:5.43.0
-- qlik-docker-qsefe.bintray.io/tenants:0.3.2
-- qlik-docker-qsefe.bintray.io/users:0.1.6
-- qlikcore/mira:0.3.1
-- traefik
-```
-
-### Usage as node.js library
+## Usage as node.js library
 
 See [API docs](./docs/api.md)
 
@@ -64,7 +79,6 @@ See [API docs](./docs/api.md)
 * [twitter](http://twitter.com/waltherstefan)  
 * [github.com/stefanwalther](http://github.com/stefanwalther) 
 * [LinkedIn](https://www.linkedin.com/in/stefanwalther/) 
-
 * [stefanwalther.io](http://stefanwalther.io) - Private blog
 * [qliksite.io](http://qliksite.io) - Qlik related blog
 
