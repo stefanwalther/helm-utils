@@ -1,5 +1,5 @@
 
-## Get Images
+## Get Images (`get-images <chart-url>`)
 
 ```
 $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
