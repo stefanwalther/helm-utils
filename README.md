@@ -12,21 +12,21 @@ _Note: The author of this library/CLI-tool is everything else than a helm expert
 
 ## Install
 
-```
+```bash
 $ npm install -g helm-utils
 ```
 
 ## Usage as CLI tool
 
-### Get Images (`get-images <chart-url>`)
+### `get-images <chart-url>`
 
-```
+```bash
 $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
 ```
 
 returns
 
-```
+```bash
 Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
 (18 images)
 
