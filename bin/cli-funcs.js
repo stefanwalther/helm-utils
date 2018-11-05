@@ -30,7 +30,7 @@ module.exports = {
   getImages: async (argv) => {
 
     let result = await helmUtils.downloadChartRepo({srcUrl: argv.chartUrl, savePath: os.tmpdir()});
-    const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
+    const unzipDir = path.join(result.savePath, result.name);
     await helmUtils.unzip({src: result.fullPath, target: unzipDir});
     let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
     let images = await helmUtils.getImagesFromManifest(manifest);

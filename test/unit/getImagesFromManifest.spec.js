@@ -24,6 +24,5 @@ describe('[unit] => getImages()', () => {
     expect(images).to.contain('foo/charts-2-1:1.0.0');
     expect(images).to.contain('foo/charts-3-1:1.0.0');
     expect(images).to.contain('foo/charts-3-2:1.0.0');
-  })
-
+  });
 });

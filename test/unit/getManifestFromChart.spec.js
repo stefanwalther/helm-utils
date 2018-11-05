@@ -24,7 +24,7 @@ describe('[unit] => getManifestFromChart()', () => {
     };
     let result = await HelmUtils.getManifestFromChart(opts);
     expect(result).to.be.an('object');
-    // console.log(util.inspect(result, false, null, true));
+    // Console.log(util.inspect(result, false, null, true));
     expect(result).to.have.property('name').to.be.equal('sample-1');
   });
   it('contains required properties');

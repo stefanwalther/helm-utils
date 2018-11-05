@@ -5,7 +5,7 @@ const path = require('path');
 const _ = require('lodash');
 
 describe('[integration-test]', () => {
-
+  // Todo: re-organize the test a bit, to also be able to test other repos
   describe('qlik.bintray.com/stable', () => {
     const chartName = 'qsefe-0.1.36.tgz';
     const opts = {
@@ -26,10 +26,10 @@ describe('[integration-test]', () => {
       expect(fs.existsSync(result.fullPath)).to.be.true;
     });
 
-    it('unzips properly', async() => {
+    it('unzips properly', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
-      const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
-      let unzipResult = await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      const unzipDir = path.join(result.savePath, result.name);
+      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
       expect(fs.existsSync(unzipDir));
     });
 
@@ -39,13 +39,12 @@ describe('[integration-test]', () => {
       await helmUtils.unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       expect(manifest).to.be.an('object');
-      expect(manifest).to.have.a.property('name').to.be.equal('qsefe-0.1.36');
+      expect(manifest).to.have.a.property('name').to.be.equal(result.name);
       expect(manifest).to.have.a.property('children').to.be.an('array');
-
     });
-    it('returns the images being used', async() => {
+    it('returns the images being used', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
-      const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
+      const unzipDir = path.join(result.savePath, result.name);
       await helmUtils.unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       let images = await helmUtils.getImagesFromManifest(manifest);
@@ -53,4 +52,6 @@ describe('[integration-test]', () => {
     });
   });
 
+  it('handles properly a 404 of a resource');
+  it('cleans up downloaded resources at the end of the script');
 });

@@ -6,7 +6,15 @@ const tar = require('tar');
 const yaml = require('js-yaml');
 const _ = require('lodash');
 
+/**
+ *
+ * @public
+ */
 class HelmUtils {
+
+  /**
+   * @type ChartManifest
+   */
 
   /**
    * Download the helm chart repo to a local folder.
@@ -53,7 +61,9 @@ class HelmUtils {
           srcUrl: opts.srcUrl,
           savePath: opts.savePath,
           saveToFile: opts.saveToFile,
-          fullPath: saveTo
+          fullPath: saveTo,
+          name: path.parse(saveTo).name,
+          ext: path.parse(saveTo).ext
         });
       });
 
@@ -67,8 +77,20 @@ class HelmUtils {
   /**
    * Unzip (tar) a given file to a specific folder.
    *
-   * @param opts
-   * @returns {Promise<void>}
+   * @param {Object} opts - Options for the `unzip()` function.
+   * @param {String} opts.src
+   * @param {String} opts.target
+   *
+   * @example
+   *
+   * // Unzip the file `./my-file.tgz` to folder `./my-file'`.
+   *
+   * const opts = {
+   *     src: './my-file.tgz'
+   *     target: './my-file'
+   * }
+   * await unzip(opts);
+   *
    *
    * @async
    * @static
@@ -90,22 +112,34 @@ class HelmUtils {
     fs.createReadStream(opts.src)
       .on('error', console.error)
       .pipe(zlib.Unzip()) // eslint-disable-line new-cap
-      .on('error', (e) => console.error(e))
+      .on('error', e => console.error(e))
       .pipe(tar.x({
         cwd: opts.target,
         strip: 1
       }))
-      .on('error', (e) => console.error(e))
-    ;
+      .on('error', e => console.error(e));
   }
 
   /**
-   * Returns the manifest of the given chart.
+   * Returns the manifest for a given chart.
    *
-   * @param {object} opts - Options for `getManifestFromChart`.
-   * @param {string} opts.loadFromDir - The (local) directory from which the chart should be loaded from.
+   * @function getManifestFromChart
+
+   * @param {Object} opts - Options for `getManifestFromChart()`.
+   * @param {String} opts.loadFromDir - The (local) directory from which the chart should be loaded from.
+
+   * @returns {ChartManifest}, to be resolved on success and rejected on failure.
    *
-   * @returns {Promise<void>}
+   * @example
+   *
+   * const opts = {
+   *     loadFromDir: './.temp/charts/chart_v1'
+   * }
+   * let manifest = await getManifestFromChart();
+   *
+   * @async
+   * @static
+   *
    */
   static async getManifestFromChart(opts) {
 
@@ -121,6 +155,13 @@ class HelmUtils {
   }
 
   // Todo: Maybe nicer instead of having `children`: https://stackoverflow.com/questions/15690706/recursively-looping-through-an-object-to-build-a-property-list
+  /**
+   *
+   * @param filePath
+   * @returns {{path: *, name: string}}
+   *
+   * @private
+   */
   static _walkChart(filePath) {
 
     let stats = fs.lstatSync(filePath);
@@ -150,6 +191,10 @@ class HelmUtils {
 
   /**
    * Returns an array of all images from a given chart manifest.
+   *
+   * @param chartManifest
+   *
+   * @return {Array<String>} - Returns an array of images found in the given manifest.
    */
   static getImagesFromManifest(chartManifest) {
 
@@ -160,13 +205,13 @@ class HelmUtils {
     let images = HelmUtils._getImagesFromObj(chartManifest);
 
     // Remove duplicates
-    let uniqueImages = _.uniqBy(images, (item) => {
-      return item
+    let uniqueImages = _.uniqBy(images, item => {
+      return item;
     });
 
     // Sort results
-    let sortedImages = _.sortBy(uniqueImages, (item) => {
-      return item
+    let sortedImages = _.sortBy(uniqueImages, item => {
+      return item;
     });
 
     // Return
@@ -174,6 +219,13 @@ class HelmUtils {
   }
 
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
+  /**
+   *
+   * @param obj
+   * @returns {*}
+   *
+   * @private
+   */
   static _getImagesFromObj(obj) {
 
     if (!Array.isArray(obj)) {
@@ -181,18 +233,16 @@ class HelmUtils {
     }
 
     return obj.reduce((acc, o) => {
-        if (o.children && o.children.length) {
-          acc = acc.concat(HelmUtils._getImagesFromObj(o.children))
-        } else {
-          if (o.name === 'values.yaml') {
-            let img = HelmUtils._getImageFromValuesObject(o.object);
-            if (img) {
-              acc.push(img);
-            }
-          }
+      if (o.children && o.children.length) {
+        acc = acc.concat(HelmUtils._getImagesFromObj(o.children));
+      } else if (o.name === 'values.yaml') {
+        let img = HelmUtils._getImageFromValuesObject(o.object);
+        if (img) {
+          acc.push(img);
         }
+      }
       return acc;
-    }, [])
+    }, []);
 
   }
 
@@ -203,6 +253,7 @@ class HelmUtils {
    * @returns {string} - Returns the image in the format <image>:<version>
    *
    * @static
+   * @private
    */
   static _getImageFromValuesObject(obj) {
 
@@ -219,6 +270,12 @@ class HelmUtils {
     return undefined;
   }
 
+  /**
+   *
+   * @param dir
+   *
+   * @private
+   */
   static _ensureDir(dir) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);

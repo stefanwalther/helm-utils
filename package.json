@@ -30,7 +30,12 @@
     "lint:src": "eslint src",
     "lint:src:fix": "eslint src --fix",
     "lint:test": "eslint test",
-    "lint:test:fix": "eslint test --fix"
+    "lint:test:fix": "eslint test --fix",
+    "test": "npm run test:unit && npm run test:integration && npm run test:coverage",
+    "test:unit": "nyc mocha './test/unit/**/*.spec.js' --require './test/mocha.conf.js'",
+    "test:integration": "nyc mocha './test/integration/**/*.spec.js' --require './test/mocha.conf.js'",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
+    "codecov": "./node_modules/.bin/codecov"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -43,8 +48,11 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "codecov": "^3.1.0",
+    "documentation": "9.0.0-alpha.1",
     "eslint": "^5.8.0",
     "eslint-config-space-single": "^0.3.5",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
   }
 }
