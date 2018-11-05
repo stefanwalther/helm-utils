@@ -1,7 +1,7 @@
 {
   "name": "helm-utils",
   "version": "0.1.0",
-  "description": "Some missing utils when working with helm.",
+  "description": "Some missing utils when working with helm (as node.js library + CLI).",
   "keywords": [
     "cli",
     "helm"
@@ -22,9 +22,7 @@
   },
   "directories": {
     "bin": "./bin",
-    "doc": "docs",
-    "src": "./src",
-    "test": "test"
+    "src": "./src"
   },
   "scripts": {
     "lint": "npm run lint:src && npm run lint:test",
@@ -36,6 +34,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "chalk": "^2.4.1",
     "js-yaml": "^3.12.0",
     "lodash": "^4.17.11",
     "tar": "^4.4.6",

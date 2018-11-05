@@ -1,114 +1,86 @@
-# qsefe
+# helm-utils
 
-## Introduction
+> Some missing utils when working with helm (as node.js library + CLI).
 
-This chart bootstraps a Qlik Sense Enterprise For Elastic deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+---
 
-- [Installing the Chart](#installing-the-chart)
-- [Uninstalling the Chart](#uninstalling-the-chart)
-- [Configuration](#configuration)
-    - [Identity provider, authentication and tenant configuration](#Identity-provider-authentication-and-tenant-configuration)
-    - [K8s RBAC support](#k8s-rbac-support)
+## Purpose
 
-## Installing the Chart
+_helm-utils_
 
-To install the chart with the release name `qsefe`:
+_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [issue]({= bugs.url}). Thx.
 
-```console
-helm install --name my-release qlik/qsefe
+## Install
+
+```
+$ npm install -g helm-utils
 ```
 
-For a local development install, do the following:
+## Usage
 
-```shell
-helm upgrade --install my-release qlik/qsefe --set devMode.enabled=true,engine.acceptEULA="yes"
+### Usage as CLI tool
+
+(TBD)
+
+### Usage as node.js library
+
+## Get Images
+
+```
+$ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
 ```
 
-The command deploys qsefe on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
+returns
 
-## Uninstalling the Chart
+```
+Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
+(18 images)
 
-To uninstall/delete the `qsefe` deployment:
-
-```console
-helm delete qsefe
+- bitnami/mongodb:3.7.1-r0
+- bitnami/redis:4.0.10
+- bitnami/redis:4.0.9
+- qlik-docker-qsefe.bintray.io/collections:0.1.16
+- qlik-docker-qsefe.bintray.io/edge-auth:0.6.3
+- qlik-docker-qsefe.bintray.io/engine:12.216.0
+- qlik-docker-qsefe.bintray.io/feature-flags:0.2.1
+- qlik-docker-qsefe.bintray.io/hub:1.0.4
+- qlik-docker-qsefe.bintray.io/licenses:1.0.5
+- qlik-docker-qsefe.bintray.io/locale:1.0.0
+- qlik-docker-qsefe.bintray.io/policy-decision-service:1.1.2
+- qlik-docker-qsefe.bintray.io/qix-sessions:0.1.6
+- qlik-docker-qsefe.bintray.io/resource-library:1.6.1
+- qlik-docker-qsefe.bintray.io/sense-client:5.43.0
+- qlik-docker-qsefe.bintray.io/tenants:0.3.2
+- qlik-docker-qsefe.bintray.io/users:0.1.6
+- qlikcore/mira:0.3.1
+- traefik
 ```
 
-The command removes all the Kubernetes components associated with the chart and deletes the release.
+## About
 
-## Configuration
+### Author
+**Stefan Walther**
 
-The following table lists some of the configurable parameters of the qsefe chart and their default values. For the full list of available options, see `values.yaml`.
+* [twitter](http://twitter.com/waltherstefan)  
+* [github.com/stefanwalther](http://github.com/stefanwalther) 
+* [LinkedIn](https://www.linkedin.com/in/stefanwalther/) 
 
-| Parameter                    | Description                                                                                   | Default                                      |
-| ---------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| engine.acceptEULA            | Agree to the Qlik sense engine EULA in order to activate it                                   | `"no"`                                       |
-| engine.replicaCount          | The number of replicas of the Qlik Sense Engine to deploy                                     | `"no"`                                       |
-| engine.persistence           | Defines the persistence layer of the engine - ReadWriteMany is required for multiple engines  |                                              |
-| devMode.enabled              | activates "devMode" for local development and deploys a mongodb chart (e.g. with minikube)    | `false`                                      |
-| mongodb.uri                  | The uri (with credentials) to the mongodb to use. Not used if `devMode` is active.            |                                              |
+* [stefanwalther.io](http://stefanwalther.io) - Private blog
+* [qliksite.io](http://qliksite.io) - Qlik related blog
 
-### Identity provider, authentication and tenant configuration
+### Contributing
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/stefanwalther/helm-utils/issues). The process for contributing is outlined below:
 
-The following table lists the authentication, tenant and identity provider configurations. You will need to configure an identity provider to be able to login and use QSEfE.
+1. Create a fork of the project
+2. Work on whatever bug or feature you wish
+3. Create a pull request (PR)
 
-| Parameter                                                  | Description                                                                                                                                                                                           | Default                                                                         |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `edge-auth.loginStateLifetime`                                       | The length of time between initiating and completing login is allowed to take                                                                                                                         | `5m`                                                                            |
-| `edge-auth.secrets.create`                                           | Create the secret resource from the following values. _See [Secrets](#Secrets)_                                                                                                                       | `true`                                                                          |
-| `edge-auth.secrets.cookieKeys[]`                                     | Array of strings used for signing cookies                                                                                                                                                             | `["A secret key"]`                                                              |
-| `edge-auth.secrets.jwtPrivateKey`                                    | RSA or EC Private signing key for internal JWTs                                                                                                                                                       | Generate EC 384 private key `ssh-keygen -t ecdsa -b 384 -f jwtPrivateKey -N ''` |
-| `edge-auth.secrets.jwtPublicKeys`                                    | Array of RSA or EC public keys for verifying internal JWTs                                                                                                                                            | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs`                                       | Array of configs for Identity providers                                                                                                                                                               | _See following_                                                                 |
-| `edge-auth.secrets.idpConfigs[].allowedClientIds`                    | An array of the IDs of allowed API clients, only client tokens with these client IDs will be allowed access, if no value is provided then any client with the correct claims will be allowed access   | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].audience`                            | The audience value that tokens from the IdP will be asserted to be issued for, default is `qlik.api`                                                                                                  | `qlik.api`                                                                      |
-| `edge-auth.secrets.idpConfigs[].claimsMapping`                       | How to map the IdP's `userinfo` to internal fields (_See [Claims Mappings](#claims-mappings)_)                                                                                                        | `{sub: "sub", name: "name"}`                                                    |
-| `edge-auth.secrets.idpConfigs[].claimsMapping.name`                  | `userinfo` field to be mapped to internal name field                                                                                                                                                  | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].claimsMapping.sub`                   | `userinfo` field to be mapped to internal sub field                                                                                                                                                   | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].clientId`                            | IdP client ID                                                                                                                                                                                         | `foo`                                                                           |
-| `edge-auth.secrets.idpConfigs[].clientSecret`                        | IdP client secret                                                                                                                                                                                     | `bar`                                                                           |
-| `edge-auth.secrets.idpConfigs[].clockToleranceSec`                   | The clock tolerance in seconds, this is to compensate for clock skew between the IdP and this service, default is 5                                                                                   | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].discoveryUrl`                        | IdP discovery URL                                                                                                                                                                                     | `http://localhost:32123/.well-known/openid-configuration`                       |
-| `edge-auth.secrets.idpConfigs[].hostname`                            | Requests to this hostname will use this IdP                                                                                                                                                           | `elastic.example`                                                                 |
-| `edge-auth.secrets.idpConfigs[].issuerConfig`                        | IdP issuer config                                                                                                                                                                                     | _See following_                                                                 |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.authorization_endpoint` | IdP authorization_endpoint URI                                                                                                                                                                        | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.end_session_endpoint`   | IdP end_session_endpoint URI                                                                                                                                                                          | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.introspection_endpoint` | IdP introspection_endpoint URI                                                                                                                                                                        | `nil`                                                                           |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.issuer`                 | IdP issuer URI                                                                                                                                                                                        |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.jwks_uri`               | IdP jwks_uri URI                                                                                                                                                                                      |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.token_endpoint`         | IdP token_endpoint URI                                                                                                                                                                                |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].issuerConfig.userinfo_endpoint`      | IdP userinfo_endpoint URI                                                                                                                                                                             |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].postLogoutRedirectUri`               | URI to redirect to on logout, this only takes effect when `end_session_endpoint` is not configured                                                                                                    |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].primary`                             | Boolean denoting if this IdP is the primary one for the hostname. Primary IdPs are those for which will be used for the interactive login, non-primary IdPs can only exchange tokens, default is true |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].realm`                               | realm name to associate with IdP users                                                                                                                                                                | `simple`                                                                        |
-| `edge-auth.secrets.idpConfigs[].staticKeys`                          | An array of public keys. This allows IdP JWT verifier to use a static set (one or more) of public keys to verify external JWTs (identity token)                                                       | `[]`                                                                            |
-| `edge-auth.secrets.idpConfigs[].staticKeys[].kid`                    | The key id                                                                                                                                                                                            |                                                                                 |
-| `edge-auth.secrets.idpConfigs[].staticKeys[].pem`                    | The pem format key                                                                                                                                                                                    |                                                                                 |
-| `edge-auth.secrets.login.stateKey`                                   | The key with which to sign the state parameter (encoded in base64), must be larger than 256 bits                                                                                                      | To generate use `openssl rand -base64 32`                                       |
-| `edge-auth.secureCookies`                                            | Restrict cookies to only be sent over SSL                                                                                                                                                             | `false`                                                                         |
+I cannot guarantee that I will merge all PRs but I will evaluate them all.
 
-### K8s RBAC support
+### License
+MIT
 
-There are three components of QSEfE that require configuration if RBAC is enabled:
+***
 
-- `elastic-infra.nginx-ingress`
-- `elastic-infra.traefik`
-- `mira`
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on November 03, 2018._
 
-See the `values.yaml` file for descriptions of the available configurations for those scenarios.
-
-`devMode` example of RBAC deployment:
-
-```shell
-helm upgrade --install qsefe qlik/qsefe --set devMode.enabled=true,engine.acceptEULA="yes",elastic-infra.nginx-ingress.rbac.create=true,elastic-infra.traefik.rbac.enabled=true,mira.rbac.create=true,mira.serviceAccount.create=true
-```
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
-
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
-
-```console
-helm install --name qsefe -f values.yaml qlik/qsefe
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
