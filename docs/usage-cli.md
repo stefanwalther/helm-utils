@@ -30,3 +30,11 @@ Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
 - qlikcore/mira:0.3.1
 - traefik
 ```
+
+### `help`
+
+Show the help for `helm-utils`.
+
+```
+$ helm-utils hellp
+```

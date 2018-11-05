@@ -6,9 +6,9 @@
 
 ## Purpose
 
-_helm-utils_
+_helm-utils_ provides some complementary utilities for [https://helm.sh](helm.sh), both as CLI-tool and node.js library.
 
-_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [issue]({= bugs.url}). Thx.
+_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [https://github.com/stefanwalther/helm-utils/issues](issue). Thx._
 
 ## Install
 
@@ -48,6 +48,14 @@ Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
 - qlik-docker-qsefe.bintray.io/users:0.1.6
 - qlikcore/mira:0.3.1
 - traefik
+```
+
+### `help`
+
+Show the help for `helm-utils`.
+
+```
+$ helm-utils hellp
 ```
 
 ## Usage as node.js library
