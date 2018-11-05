@@ -5,6 +5,7 @@ const zlib = require('zlib');
 const tar = require('tar');
 const yaml = require('js-yaml');
 const _ = require('lodash');
+const isUrl = require('is-url');
 
 /**
  *
@@ -75,11 +76,38 @@ class HelmUtils {
   }
 
   /**
+   * Get the version for a chart-repo's index.yaml file.
+   *
+   * @param {Object} opts - The options for `getChartVersions()` function.
+   * @param {String} opts.src - The
+   * @returns {Promise<void>}
+   */
+  static async getRepoCharts(opts) {
+
+    if (!opts || _.isEmpty(opts)) {
+      throw new Error('Argument `opts` is undefined or empty.');
+    }
+    if (!opts.src || _.isEmpty(opts.src)) {
+      throw new Error('Argument `opts.src` is undefined or empty.');
+    }
+    let resolvedSrc = HelmUtils._resolveSrc(opts.src);
+    if (resolvedSrc.is === 'unknown') {
+      throw new Error('Argument `opts.src` is either a URL nor a local file.');
+    }
+
+    if (resolvedSrc.isFile) {
+      // Todo: Error handling in case of an invalid .yaml file
+      return yaml.safeLoad(fs.readFileSync(opts.src, 'utf8'));
+    }
+
+  }
+
+  /**
    * Unzip (tar) a given file to a specific folder.
    *
-   * @param {Object} opts - Options for the `unzip()` function.
-   * @param {String} opts.src
-   * @param {String} opts.target
+   * @param {Object} opts - The options for the `unzip()` function.
+   * @param {String} opts.src - The source file (a .tgz file).
+   * @param {String} opts.target - The local target directory to unpack the .tgz file to.
    *
    * @example
    *
@@ -98,13 +126,13 @@ class HelmUtils {
   static async unzip(opts) {
 
     if (!opts || _.isEmpty(opts)) {
-      throw new Error('No `opts` defined.');
+      throw new Error('Argument `opts` is not defined or empty.');
     }
     if (!opts.src) {
-      throw new Error('`opts.src` is not defined.');
+      throw new Error('Argument `opts.src` is not defined or empty.');
     }
     if (!opts.target) {
-      throw new Error('`opts.target` is not defined.');
+      throw new Error('Argument `opts.target` is not defined or empty.');
     }
 
     this._ensureDir(opts.target);
@@ -218,6 +246,11 @@ class HelmUtils {
     return sortedImages;
   }
 
+  // *******************************************************************************************************************
+  // HELPERS
+  // *******************************************************************************************************************
+
+
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
   /**
    *
@@ -279,6 +312,41 @@ class HelmUtils {
   static _ensureDir(dir) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
+    }
+  }
+
+  /**
+   *
+   * @param src
+   * @returns {*}
+   * @private
+   */
+  static _resolveSrc(src) {
+
+    const defaults = {
+      isUrl: false,
+      isFile: false,
+      is: 'unknown'
+    };
+
+    if (isUrl(src)) {
+      return Object.assign(defaults, {
+        is: 'online',
+        isUrl: true
+      })
+    }
+
+    try {
+      if (fs.statSync(src).isFile()) {
+        return Object.assign(defaults, {
+          is: 'local',
+          isFile: true
+        })
+      }
+    } catch(e) {
+      return Object.assign(defaults, {
+        error: e
+      })
     }
   }
 

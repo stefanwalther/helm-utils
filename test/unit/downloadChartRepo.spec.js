@@ -1,30 +1,33 @@
-const HelmUtils = require('./../../src/index');
+/* global describe */
+const helmUtils = require('./../../src/index');
 
-describe('[unit-test] => downloadChartRepo()', () => {
+describe('[unit] => downloadChartRepo()', () => {
   it('should expose some methods', () => {
-    expect(HelmUtils).to.have.a.property('downloadChartRepo').to.be.a('function');
+    expect(helmUtils).to.have.a.property('downloadChartRepo').to.be.a('function');
   });
 
-  it('requires opts.srcUrl', () => {
+  it('throws an error if `opts.srcUrl` is not defined.', () => {
     const opts = {
       savePath: 'foo'
     };
-    return expect(HelmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.srcUrl` is not defined.');
+    return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.srcUrl` is not defined.');
   });
 
-  it('requires opts.savePath', () => {
+  it('throws an error `opts.savePath` is not defined.', () => {
     const opts = {
       srcUrl: 'foo'
     };
-    return expect(HelmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.savePath` is not defined.');
+    return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.savePath` is not defined.');
   });
 
-  it('requires opts', () => {
-    return expect(HelmUtils.downloadChartRepo()).to.be.rejectedWith(Error, 'No `opts` defined.');
+  it('defaults to the `opts.srcUrl` file path if `opts.saveToFile` is not provided.');
+
+  it('throws an error if `opts` is not defined.', () => {
+    return expect(helmUtils.downloadChartRepo()).to.be.rejectedWith(Error, 'No `opts` defined.');
   });
 
-  it('requires opts (and ignores and empty object)', () => {
+  it('throws an error if `opts` is defined, but an empty object.', () => {
     const opts = {};
-    return expect(HelmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, 'No `opts` defined.');
+    return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, 'No `opts` defined.');
   });
 });

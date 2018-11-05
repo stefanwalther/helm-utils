@@ -1,21 +1,22 @@
-const HelmUtils = require('./../../src/helm-utils');
+/* global describe */
+const helmUtils = require('./../../src/helm-utils');
 const path = require('path');
 
 describe('[unit] => getImages()', () => {
   const FIXTURE_PATH = path.resolve(__dirname, './../fixtures/sample-1');
 
   it('throws an error if argument `chartManifest` is not passed', () => {
-    expect(() => HelmUtils.getImagesFromManifest()).to.throw('Argument `chartManifest` is not defined.');
+    expect(() => helmUtils.getImagesFromManifest()).to.throw('Argument `chartManifest` is not defined.');
   });
 
   it('returns all images', async () => {
     const opts = {
       loadFromDir: FIXTURE_PATH
     };
-    let chartManifest = await HelmUtils.getManifestFromChart(opts);
+    let chartManifest = await helmUtils.getManifestFromChart(opts);
     expect(chartManifest).to.be.an('object');
 
-    let images = HelmUtils.getImagesFromManifest(chartManifest);
+    let images = helmUtils.getImagesFromManifest(chartManifest);
 
     expect(images).to.exist;
     expect(images).to.be.of.length(5);

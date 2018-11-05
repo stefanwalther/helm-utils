@@ -10,11 +10,25 @@ yargs
     builder: yargs => {
       yargs.positional('chartUrl', {
         type: 'string',
-        describe: 'the repo'
+        describe: 'the chart Url'
       });
     },
     handler: (argv) => {
       fn.getImages(argv);
+    }
+  })
+  .command({
+    command: 'get-charts <repo-uri> [format]',
+    alias: ['gc'],
+    desc: 'Get the charts from a given chart repository.',
+    builder: yargs => {
+      yargs.positional('repoUri', {
+        type: 'string',
+        describe: 'the repository Uri'
+      })
+    },
+    handler: (argv) => {
+      fn.getRepoCharts(argv)
     }
   })
   .option('verbose', {
@@ -25,8 +39,8 @@ yargs
   .option('format', {
     type: 'string',
     describe: 'How to format the output',
-    choices: ['verbose', 'json'],
-    default: 'verbose'
+    choices: ['table', 'json'],
+    default: 'table'
   })
   .demandCommand(1, 'You need ad least one command before moving on')
   .showHelpOnFail(false, 'Specify -help for available options')

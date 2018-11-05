@@ -35,14 +35,17 @@
     "test:unit": "nyc mocha './test/unit/**/*.spec.js' --require './test/mocha.conf.js'",
     "test:integration": "nyc mocha './test/integration/**/*.spec.js' --require './test/mocha.conf.js'",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:html": "nyc report --reporter=html",
     "codecov": "./node_modules/.bin/codecov"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
     "cli-table": "^0.3.1",
+    "is-url": "^1.2.4",
     "js-yaml": "^3.12.0",
     "lodash": "^4.17.11",
+    "moment": "^2.22.2",
     "semver": "^5.6.0",
     "tar": "^4.4.6",
     "yargs": "^12.0.2"

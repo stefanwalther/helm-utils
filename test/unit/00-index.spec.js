@@ -1,43 +1,41 @@
-const HelmUtils = require('./../../src/index');
+/* global describe */
+const helmUtils = require('./../../src/index');
+const path = require('path');
 
-describe('[unit-test] => helm-utils', () => {
+describe('[unit] => helm-utils', () => {
   it('exposes some static functions', () => {
-    expect(HelmUtils).to.have.property('downloadChartRepo').to.be.a('function');
-    expect(HelmUtils).to.have.property('unzip').to.be.a('function');
+    expect(helmUtils).to.have.property('downloadChartRepo').to.be.a('function');
+    expect(helmUtils).to.have.property('unzip').to.be.a('function');
   });
 
-  it('exposes some functions as an instance', () => {
-    let helmUtils = new HelmUtils();
+  describe.only('_resolveSrc', () => {
+    it('recognizes URIs as `online` resources', () => {
+      expect(helmUtils._resolveSrc('https://foo.bar')).to.be.an('object').to.have.a.property('is', 'online');
+    });
+    it('recognizes local paths as `local` resources', () => {
+      const f = path.resolve(__dirname, './../fixtures/is-file/foo.bar');
+      let result = helmUtils._resolveSrc(f);
+      expect(result).to.be.an('object').to.have.a.property('is', 'local');
+    });
+    it('returns whether a URI exists or not');
+    it('returns whether a local file exists or not')
+
   });
 
-  describe('as an instance', () => {
-    describe('downloadChartRepo()', () => {
+  // Todo: move to unzip.spec.js
+  describe('unzip()', () => {
+
+    it('requires opts.target', () => {
 
     });
 
-    describe('unzip()', () => {
-      it('requires opts.src', () => {
-        const opts = {
-          target: 'foo'
-        };
-        return expect(HelmUtils.unzip(opts)).to.be.rejectedWith(Error, '`opts.src` is not defined.');
-      });
+    it('requires an opts argument', () => {
+      return expect(helmUtils.unzip()).to.be.rejectedWith(Error, 'No `opts` defined.');
+    });
 
-      it('requires opts.target', () => {
-        const opts = {
-          src: 'foo'
-        };
-        return expect(HelmUtils.unzip(opts)).to.be.rejectedWith(Error, '`opts.target` is not defined.');
-      });
-
-      it('requires an opts argument', () => {
-        return expect(HelmUtils.unzip()).to.be.rejectedWith(Error, 'No `opts` defined.');
-      });
-
-      it('requires an opts argument, which cannot be empty', () => {
-        const opts = {};
-        return expect(HelmUtils.unzip(opts)).to.be.rejectedWith(Error, 'No `opts` defined.');
-      });
+    it('requires an opts argument, which cannot be empty', () => {
+      const opts = {};
+      return expect(helmUtils.unzip(opts)).to.be.rejectedWith(Error, 'No `opts` defined.');
     });
   });
 });
