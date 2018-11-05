@@ -16,11 +16,9 @@ _Note: The author of this library/CLI-tool is everything else than a helm expert
 $ npm install -g helm-utils
 ```
 
-## Usage
+## Usage as CLI tool
 
-### Usage as CLI tool
-
-## Get Images (`get-images <chart-url>`)
+### Get Images (`get-images <chart-url>`)
 
 ```
 $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
@@ -52,7 +50,7 @@ Images being used in https://qlik.bintray.com/edge/qsefe-0.1.99.tgz:
 - traefik
 ```
 
-### Usage as node.js library
+## Usage as node.js library
 
 See [API docs](./docs/api.md)
 
