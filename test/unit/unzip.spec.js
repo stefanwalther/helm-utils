@@ -1,10 +1,15 @@
 /* global describe */
 const helmUtils = require('./../../src/helm-utils');
 
-describe.only('[unit] unzip()', () => {
+describe('[unit] unzip()', () => {
 
-  it('throws an error if argument `opts` is not defined or empty.', () => {
+  it('throws an error if argument `opts` is not defined', () => {
+    return expect(helmUtils.unzip()).to.be.rejectedWith(Error, 'Argument `opts` is not defined or empty.');
+  });
 
+  it('throws an error if argument `opts` is empty.', () => {
+    const opts = {};
+    return expect(helmUtils.unzip(opts)).to.be.rejectedWith(Error, 'Argument `opts` is not defined or empty.');
   });
   it('throws an error if argument `opts.src` is not defined or empty.', () => {
     const opts = {

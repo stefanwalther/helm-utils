@@ -1,4 +1,3 @@
-/* global describe */
 const helmUtils = require('./../../src/index');
 const path = require('path');
 
@@ -8,7 +7,7 @@ describe('[unit] => helm-utils', () => {
     expect(helmUtils).to.have.property('unzip').to.be.a('function');
   });
 
-  describe.only('_resolveSrc', () => {
+  describe('_resolveSrc', () => {
     it('recognizes URIs as `online` resources', () => {
       expect(helmUtils._resolveSrc('https://foo.bar')).to.be.an('object').to.have.a.property('is', 'online');
     });
@@ -25,17 +24,6 @@ describe('[unit] => helm-utils', () => {
   // Todo: move to unzip.spec.js
   describe('unzip()', () => {
 
-    it('requires opts.target', () => {
 
-    });
-
-    it('requires an opts argument', () => {
-      return expect(helmUtils.unzip()).to.be.rejectedWith(Error, 'No `opts` defined.');
-    });
-
-    it('requires an opts argument, which cannot be empty', () => {
-      const opts = {};
-      return expect(helmUtils.unzip(opts)).to.be.rejectedWith(Error, 'No `opts` defined.');
-    });
   });
 });

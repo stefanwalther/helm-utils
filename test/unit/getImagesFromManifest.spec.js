@@ -1,4 +1,3 @@
-/* global describe */
 const helmUtils = require('./../../src/helm-utils');
 const path = require('path');
 

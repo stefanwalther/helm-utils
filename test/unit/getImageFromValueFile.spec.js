@@ -1,4 +1,3 @@
-/* global describe */
 const HelmUtils = require('./../../src/helm-utils');
 
 describe('[unit] => getImageFromValueFile()', () => {

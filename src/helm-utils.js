@@ -92,7 +92,7 @@ class HelmUtils {
     }
     let resolvedSrc = HelmUtils._resolveSrc(opts.src);
     if (resolvedSrc.is === 'unknown') {
-      throw new Error('Argument `opts.src` is either a URL nor a local file.');
+      throw new Error('Argument `opts.src` is neither a URL nor a local file.');
     }
 
     if (resolvedSrc.isFile) {

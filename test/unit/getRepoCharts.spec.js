@@ -1,8 +1,7 @@
-/* global describe */
 const helmUtils = require('./../../src');
 const path = require('path');
 
-describe.only('[unit] => getChartVersions()', () => {
+describe('[unit] => getChartVersions()', () => {
 
   it('throws an error if argument `opts` is missing.', async () => {
     return expect(helmUtils.getRepoCharts()).to.be.rejectedWith(Error, 'Argument `opts` is undefined or empty.');

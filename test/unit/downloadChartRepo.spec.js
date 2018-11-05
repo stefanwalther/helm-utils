@@ -1,4 +1,3 @@
-/* global describe */
 const helmUtils = require('./../../src/index');
 
 describe('[unit] => downloadChartRepo()', () => {

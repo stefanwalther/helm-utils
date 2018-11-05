@@ -31,7 +31,7 @@
     "lint:src:fix": "eslint src --fix",
     "lint:test": "eslint test",
     "lint:test:fix": "eslint test --fix",
-    "test": "npm run test:unit && npm run test:integration && npm run test:coverage",
+    "test": "nyc mocha './test/**/*.spec.js' --require './test/mocha.conf.js'",
     "test:unit": "nyc mocha './test/unit/**/*.spec.js' --require './test/mocha.conf.js'",
     "test:integration": "nyc mocha './test/integration/**/*.spec.js' --require './test/mocha.conf.js'",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
