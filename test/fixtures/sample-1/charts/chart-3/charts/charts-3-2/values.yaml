@@ -1,0 +1,3 @@
+image: 
+  repository: foo/charts-3-2
+  tag: 1.0.0
