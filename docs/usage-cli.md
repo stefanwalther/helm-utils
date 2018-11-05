@@ -3,6 +3,8 @@
 
 <details>
   <summary>Details & Example</summary>
+  
+  Return all docker images from a given helm-chart.
 
   ```bash
   $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz

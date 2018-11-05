@@ -6,9 +6,9 @@
 
 ## Purpose
 
-_helm-utils_ provides some complementary utilities for [https://helm.sh](helm.sh), both as CLI-tool and node.js library.
+_helm-utils_ provides some complementary utilities for [helm](https://helm.sh), both as CLI-tool and node.js library.
 
-_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [https://github.com/stefanwalther/helm-utils/issues](issue). Thx._
+_Note: The author of this library/CLI-tool is everything else than a helm expert. It might be that I have re-implemented something which is anyhow already available in helm. If this is the case, please shoot me a message and raise an [issue](https://github.com/stefanwalther/helm-utils/issues). Thx._
 
 ## Install
 
@@ -22,6 +22,8 @@ $ npm install -g helm-utils
 
 <details>
   <summary>Details & Example</summary>
+  
+  Return all docker images from a given helm-chart.
 
   ```bash
   $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
@@ -77,7 +79,6 @@ See [API docs](./docs/api.md)
 * [twitter](http://twitter.com/waltherstefan)  
 * [github.com/stefanwalther](http://github.com/stefanwalther) 
 * [LinkedIn](https://www.linkedin.com/in/stefanwalther/) 
-
 * [stefanwalther.io](http://stefanwalther.io) - Private blog
 * [qliksite.io](http://qliksite.io) - Qlik related blog
 
