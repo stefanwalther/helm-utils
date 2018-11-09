@@ -29,5 +29,4 @@ describe('[unit] => getManifestFromChart()', () => {
   it('contains required properties');
 
   it('provides deep values');
-
 });

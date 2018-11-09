@@ -1,7 +1,6 @@
 const helmUtils = require('./../../src/index');
 
 describe('[unit] => downloadChartRepo()', () => {
-
   it('should expose some methods', () => {
     expect(helmUtils).to.have.a.property('downloadChartRepo').to.be.a('function');
   });
@@ -19,8 +18,6 @@ describe('[unit] => downloadChartRepo()', () => {
     };
     return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.savePath` is not defined.');
   });
-
-
 
   it('defaults to the `opts.srcUrl` file path when storing the file in case `opts.saveToFile` is not provided.');
 

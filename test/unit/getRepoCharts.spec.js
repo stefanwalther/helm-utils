@@ -5,7 +5,6 @@ const fs = require('fs-extra');
 const SAVE_PATH = path.resolve(__dirname, './../.tmp');
 
 describe('[unit] => getChartVersions()', () => {
-
   beforeEach(async () => {
     return helmUtils._ensureDir(SAVE_PATH);
   });
@@ -47,10 +46,10 @@ describe('[unit] => getChartVersions()', () => {
   });
 
   it('throws an error if we deal with an empty .yaml file.', async () => {
-      const opts = {
-        src: path.resolve(__dirname, './../fixtures/valid-check/empty.yaml')
-      };
-      return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'The .yaml file is empty.');
+    const opts = {
+      src: path.resolve(__dirname, './../fixtures/valid-check/empty.yaml')
+    };
+    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'The .yaml file is empty.');
   });
 
   it('throws an error if we deal with an invalid .yaml file.', async () => {
