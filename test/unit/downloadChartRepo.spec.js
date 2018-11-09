@@ -20,7 +20,7 @@ describe('[unit] => downloadChartRepo()', () => {
   });
 
   xit('defaults to the `opts.srcUrl` file path when storing the file in case `opts.saveToFile` is not provided.', () => {
-   // Todo: not even sure if that makes sense ... needs to be revisited.
+    // Todo: not even sure if that makes sense ... needs to be revisited.
   });
 
   it('throws an error if `opts` is not defined.', () => {

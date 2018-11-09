@@ -41,5 +41,4 @@ describe('[unit] => unzip()', () => {
   it('properly unzips a local file to a dir');
 
   it('properly downloads and then unzips a URI to a dir');
-
 });

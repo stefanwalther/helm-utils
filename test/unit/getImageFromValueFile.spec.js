@@ -1,7 +1,6 @@
 const HelmUtils = require('./../../src/helm-utils');
 
 describe('[unit] => getImageFromValueFile()', () => {
-
   it('properly handles an object', () => {
     const valuesYaml = {
       image: {
@@ -18,5 +17,4 @@ describe('[unit] => getImageFromValueFile()', () => {
     };
     expect(HelmUtils._getImageFromValuesObject(valuesYaml)).to.be.equal(valuesYaml.image);
   });
-
 });
