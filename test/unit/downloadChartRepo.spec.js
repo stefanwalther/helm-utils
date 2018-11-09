@@ -19,7 +19,9 @@ describe('[unit] => downloadChartRepo()', () => {
     return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.savePath` is not defined.');
   });
 
-  it('defaults to the `opts.srcUrl` file path if `opts.saveToFile` is not provided.');
+
+
+  it('defaults to the `opts.srcUrl` file path when storing the file in case `opts.saveToFile` is not provided.');
 
   it('throws an error if `opts` is not defined.', () => {
     return expect(helmUtils.downloadChartRepo()).to.be.rejectedWith(Error, 'No `opts` defined.');

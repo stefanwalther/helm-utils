@@ -1,8 +1,6 @@
-/* global describe */
 const helmUtils = require('./../../src/helm-utils');
 const os = require('os');
 const path = require('path');
-const util = require('util');
 
 describe('[unit] => getManifestFromChart()', () => {
   const FIXTURE_PATH = path.resolve(__dirname, './../fixtures/sample-1');
@@ -29,5 +27,7 @@ describe('[unit] => getManifestFromChart()', () => {
     expect(result).to.have.property('name').to.be.equal('sample-1');
   });
   it('contains required properties');
+
   it('provides deep values');
+
 });
