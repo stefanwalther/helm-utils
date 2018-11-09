@@ -7,22 +7,18 @@
         -   [Parameters][3]
     -   [downloadChartRepo][4]
         -   [Parameters][5]
-    -   [unzip][6]
+    -   [getRepoCharts][6]
         -   [Parameters][7]
-        -   [Examples][8]
-    -   [getImagesFromManifest][9]
-        -   [Parameters][10]
--   [getManifestFromChart][11]
-    -   [Parameters][12]
-    -   [Examples][13]
+    -   [unzip][8]
+        -   [Parameters][9]
+        -   [Examples][10]
+    -   [getImagesFromManifest][11]
+        -   [Parameters][12]
+-   [getManifestFromChart][13]
+    -   [Parameters][14]
+    -   [Examples][15]
 
 ## HelmUtils
-
-### downloadChartRepo
-
-#### Parameters
-
--   `opts`  
 
 ### downloadChartRepo
 
@@ -30,12 +26,29 @@ Download the helm chart repo to a local folder.
 
 #### Parameters
 
--   `opts` **[object][14]** Options to use.
-    -   `opts.srcUrl` **[string][15]** The Uri of the chart package which should be downloaded to local disk.
-    -   `opts.savePath` **[string][15]** The path to download the package to. Defaults to os.temp().
-    -   `opts.saveToFile` **[string][15]** The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
+-   `opts` **[object][16]** Options to use.
+    -   `opts.srcUrl` **[string][17]** The Uri of the chart package which should be downloaded to local disk.
+    -   `opts.savePath` **[string][17]** The path to download the package to. Defaults to os.temp().
+    -   `opts.saveToFile` **[string][17]** The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
 
-Returns **[Promise][16]&lt;any>** 
+Returns **[Promise][18]&lt;any>** 
+
+### downloadChartRepo
+
+#### Parameters
+
+-   `opts`  
+
+### getRepoCharts
+
+Get the version for a chart-repo's index.yaml file.
+
+#### Parameters
+
+-   `opts` **[Object][16]** The options for `getChartVersions()` function.
+    -   `opts.src` **[String][17]** The
+
+Returns **[Promise][18]&lt;void>** 
 
 ### unzip
 
@@ -43,9 +56,9 @@ Unzip (tar) a given file to a specific folder.
 
 #### Parameters
 
--   `opts` **[Object][14]** Options for the `unzip()` function.
-    -   `opts.src` **[String][15]** 
-    -   `opts.target` **[String][15]** 
+-   `opts` **[Object][16]** The options for the `unzip()` function.
+    -   `opts.src` **[String][17]** The source file (a .tgz file).
+    -   `opts.target` **[String][17]** The local target directory to unpack the .tgz file to.
 
 #### Examples
 
@@ -67,7 +80,7 @@ Returns an array of all images from a given chart manifest.
 
 -   `chartManifest`  
 
-Returns **[Array][17]&lt;[String][15]>** Returns an array of images found in the given manifest.
+Returns **[Array][19]&lt;[String][17]>** Returns an array of images found in the given manifest.
 
 ## getManifestFromChart
 
@@ -75,8 +88,8 @@ Returns the manifest for a given chart.
 
 ### Parameters
 
--   `opts` **[Object][14]** Options for `getManifestFromChart()`.
-    -   `opts.loadFromDir` **[String][15]** The (local) directory from which the chart should be loaded from.
+-   `opts` **[Object][16]** Options for `getManifestFromChart()`.
+    -   `opts.loadFromDir` **[String][17]** The (local) directory from which the chart should be loaded from.
 
 ### Examples
 
@@ -99,26 +112,30 @@ Returns **ChartManifest** , to be resolved on success and rejected on failure.
 
 [5]: #parameters-1
 
-[6]: #unzip
+[6]: #getrepocharts
 
 [7]: #parameters-2
 
-[8]: #examples
+[8]: #unzip
 
-[9]: #getimagesfrommanifest
+[9]: #parameters-3
 
-[10]: #parameters-3
+[10]: #examples
 
-[11]: #getmanifestfromchart
+[11]: #getimagesfrommanifest
 
 [12]: #parameters-4
 
-[13]: #examples-1
+[13]: #getmanifestfromchart
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[14]: #parameters-5
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[15]: #examples-1
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

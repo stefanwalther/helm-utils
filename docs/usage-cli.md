@@ -1,10 +1,25 @@
 
-### `get-images <chart-url>`
+### `get-charts <repo-uri>`
+
+> Return all charts from either an online or local chart repository.
+
+_Note:_ This basically does the same as `helm search`, but with some additional sugar functionality.
 
 <details>
   <summary>Details & Example</summary>
   
-  Return all docker images from a given helm-chart.
+  ```bash
+  $ helm-utils get-charts https://qlik.bintray.com/stable
+  ```
+  
+</details>
+
+### `get-images <chart-url>`
+
+> Return all docker images from a given helm-chart.
+
+<details>
+  <summary>Details & Example</summary>
 
   ```bash
   $ helm-utils get-images https://qlik.bintray.com/stable/qsefe-0.1.36.tgz
