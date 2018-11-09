@@ -20,10 +20,4 @@ describe('[unit] => helm-utils', () => {
     it('returns whether a local file exists or not')
 
   });
-
-  // Todo: move to unzip.spec.js
-  describe('unzip()', () => {
-
-
-  });
 });

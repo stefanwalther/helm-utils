@@ -23,6 +23,7 @@ describe('[unit] => getChartVersions()', () => {
     };
     expect(true).to.be.false;
   });
+  it('throws an error if the given Url does not exist');
   it('throws an error if we deal with an empty or invalid .yaml file.');
   it('throws an error if we are offline and trying to open an online .yaml file.');
   it('returns an object with expected properties.', async () => {
