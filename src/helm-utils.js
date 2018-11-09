@@ -14,14 +14,24 @@ const isUrl = require('is-url');
 class HelmUtils {
 
   /**
+   * @typedef {Object} DownloadRepoResult
+   * @property {String} srcUrl - The passed in `srcUrl` property.
+   * @property {String} savePath - The passed in `savePath` property.
+   * @property {String} saveToFile - The passed in `saveToFile` property.
+   * @property {String} fullPath - The full path of the downloaded file.
+   * @property {String} name - The filename.
+   * @property {String} ext - The filename's extension.
+   */
+
+  /**
    * Download the helm chart repo to a local folder.
    *
-   * @param {object} opts - Options to use.
-   * @param {string} opts.srcUrl - The Uri of the chart package which should be downloaded to local disk.
-   * @param {string} opts.savePath - The path to download the package to. Defaults to os.temp().
-   * @param {string} opts.saveToFile - The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
+   * @param {Object} opts - Options to use.
+   * @param {String} opts.srcUrl - The Uri of the chart package which should be downloaded to local disk.
+   * @param {String} opts.savePath - The path to download the package to. Defaults to os.temp().
+   * @param {String} opts.saveToFile - The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
    *
-   * @return {Promise<*>}
+   * @return {Promise<DownloadRepoResult, Error>}
    *
    * @async
    * @static
@@ -59,9 +69,7 @@ class HelmUtils {
     return new Promise((resolve, reject) => {
       response.data.on('end', () => {
         resolve({
-          srcUrl: opts.srcUrl,
-          savePath: opts.savePath,
-          saveToFile: opts.saveToFile,
+          ...opts,
           fullPath: saveTo,
           name: path.parse(saveTo).name,
           ext: path.parse(saveTo).ext
@@ -69,7 +77,6 @@ class HelmUtils {
       });
 
       response.data.on('error', err => {
-        console.log('err', err);
         reject(err);
       });
     });
@@ -99,7 +106,6 @@ class HelmUtils {
       !_.endsWith(opts.src, 'yaml' &&
         !_.endsWith(opts.src, 'yml'))) {
       opts.src += path.join(opts.src, 'index.yaml');
-      console.log(opts.src);
     }
 
     if (resolvedSrc.isFile) {
@@ -115,8 +121,11 @@ class HelmUtils {
       return yamlContent;
     }
     if (resolvedSrc.isUrl) {
-      opts.srcUrl = opts.src;
-      return this.downloadChartRepo(opts);
+      const optsClone = {
+        ...opts,
+        srcUrl: opts.src
+      };
+      return this.downloadChartRepo(optsClone);
     }
     throw new Error('Could not determine the type of the `src`.');
 
