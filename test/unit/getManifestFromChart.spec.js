@@ -26,7 +26,9 @@ describe('[unit] => getManifestFromChart()', () => {
     // Console.log(util.inspect(result, false, null, true));
     expect(result).to.have.property('name').to.be.equal('sample-1');
   });
+
   it('contains required properties');
 
   it('provides deep values');
+
 });
