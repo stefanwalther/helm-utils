@@ -1,7 +1,17 @@
 const helmUtils = require('./../../src');
 const path = require('path');
 
+const SAVE_PATH = path.resolve(__dirname, './../.tmp');
+
 describe('[unit] => getChartVersions()', () => {
+
+  beforeEach(async () => {
+    return helmUtils._ensureDir(SAVE_PATH);
+  });
+  afterEach(async () => {
+    //Todo: Delete .tmp (SAVE_PATH)
+  });
+
   it('throws an error if argument `opts` is missing.', async () => {
     return expect(helmUtils.getRepoCharts()).to.be.rejectedWith(Error, 'Argument `opts` is undefined or empty.');
   });
@@ -20,16 +30,35 @@ describe('[unit] => getChartVersions()', () => {
     });
   });
 
-  xit('throws an error if the given file does not exist.', async () => {
+  it('throws an error if the given file does not exist.', async () => {
     const opts = {
-      src: 'http://'
+      src: path.resolve(__dirname, './../test/fixtures/no-file-here.yaml')
     };
-    expect(true).to.be.false;
+    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'Argument `opts.src` is neither a URL nor a local file.');
   });
 
-  it('throws an error if the given Url does not exist');
+  it('throws an error if the given Url does not exist', async () => {
+    const opts = {
+      src: 'http://www.does-not-exist/charts',
+      savePath: SAVE_PATH
+    };
+    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'ENOTFOUND'); // Todo: better error message
+  });
 
-  it('throws an error if we deal with an empty or invalid .yaml file.');
+  it('throws an error if we deal with an empty .yaml file.', async () => {
+      const opts = {
+        src: path.resolve(__dirname, './../fixtures/valid-check/empty.yaml')
+      };
+      return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'The .yaml file is empty.');
+  });
+
+  it('throws an error if we deal with an invalid .yaml file.', async () => {
+    const opts = {
+      src: path.resolve(__dirname, './../fixtures/valid-check/invalid.yaml')
+    };
+    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'The .yaml file is invalid');
+    // Todo: test also the inner error
+  });
 
   it('throws an error if we are offline and trying to open an online .yaml file.');
 

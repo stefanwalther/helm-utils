@@ -28,6 +28,8 @@ class HelmUtils {
    */
   static async downloadChartRepo(opts) {
 
+    console.log('opts', opts);
+
     if (!opts || _.isEmpty(opts)) {
       throw new Error('No `opts` defined.');
     }
@@ -39,8 +41,10 @@ class HelmUtils {
     }
     if (_.isEmpty(opts.saveToFile)) {
       opts.saveToFile = opts.srcUrl.substring(opts.srcUrl.lastIndexOf('/') + 1);
+      console.log('opts.saveToFile', opts.saveToFile);
     }
 
+    console.log('opts.savePath', opts.savePath);
     HelmUtils._ensureDir(opts.savePath);
     const saveTo = path.resolve(opts.savePath, opts.saveToFile);
 
@@ -91,19 +95,24 @@ class HelmUtils {
       throw new Error('Argument `opts.src` is neither a URL nor a local file.');
     }
 
-    // Additional validations in case we are dealing with an online `src`.
-    // if (resolvedSrc.is === 'online') {
-    //
-    // }
-
-    if (resolvedSrc.is('online') &&
-      !_.endsWith(resolvedSrc.src, 'yaml' &&
-      !_.endsWith(resolvedSrc.src, 'yml'))) {
-      resolvedSrc.src += '/index.yaml'; // Todo: in case of a local folder and Windows, this might fail.
+    if (resolvedSrc.is === 'online' &&
+      !_.endsWith(opts.src, 'yaml' &&
+        !_.endsWith(opts.src, 'yml'))) {
+      opts.src += path.join(opts.src, 'index.yaml');
+      console.log(opts.src);
     }
 
     if (resolvedSrc.isFile) {
-      return yaml.safeLoad(fs.readFileSync(opts.src, 'utf8'));
+      let yamlContent;
+      try {
+        yamlContent = yaml.safeLoad(fs.readFileSync(opts.src, 'utf8'));
+      } catch (e) {
+        throw new Error('The .yaml file is invalid', e);
+      }
+      if (_.isEmpty(yamlContent)) {
+        throw new Error('The .yaml file is empty.');
+      }
+      return yamlContent;
     }
     if (resolvedSrc.isUrl) {
       opts.srcUrl = opts.src;
