@@ -17,7 +17,6 @@ describe('[unit] => helm-utils', () => {
       expect(result).to.be.an('object').to.have.a.property('is', 'local');
     });
     it('returns whether a URI exists or not');
-    it('returns whether a local file exists or not')
-
+    it('returns whether a local file exists or not');
   });
 });

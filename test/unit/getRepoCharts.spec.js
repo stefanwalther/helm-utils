@@ -2,7 +2,6 @@ const helmUtils = require('./../../src');
 const path = require('path');
 
 describe('[unit] => getChartVersions()', () => {
-
   it('throws an error if argument `opts` is missing.', async () => {
     return expect(helmUtils.getRepoCharts()).to.be.rejectedWith(Error, 'Argument `opts` is undefined or empty.');
   });
@@ -37,5 +36,5 @@ describe('[unit] => getChartVersions()', () => {
   it('allows to filter by chart repo.');
   it('allows to return only the latest chart.');
   it('defaults to ./index.yaml for local resources.');
-  it('defaults to ./index.yaml for online resources.')
+  it('defaults to ./index.yaml for online resources.');
 });

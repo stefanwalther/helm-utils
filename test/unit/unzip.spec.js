@@ -2,7 +2,6 @@
 const helmUtils = require('./../../src/helm-utils');
 
 describe('[unit] => unzip()', () => {
-
   it('throws an error if argument `opts` is not defined', () => {
     return expect(helmUtils.unzip()).to.be.rejectedWith(Error, 'Argument `opts` is not defined or empty.');
   });
@@ -35,5 +34,4 @@ describe('[unit] => unzip()', () => {
   });
   it('properly unzips a local file to a dir');
   it('properly downloads and then unzips a URI to a dir');
-
 });

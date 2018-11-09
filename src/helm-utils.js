@@ -14,10 +14,6 @@ const isUrl = require('is-url');
 class HelmUtils {
 
   /**
-   * @type ChartManifest
-   */
-
-  /**
    * Download the helm chart repo to a local folder.
    *
    * @param {object} opts - Options to use.
@@ -95,10 +91,25 @@ class HelmUtils {
       throw new Error('Argument `opts.src` is neither a URL nor a local file.');
     }
 
+    // Additional validations in case we are dealing with an online `src`.
+    // if (resolvedSrc.is === 'online') {
+    //
+    // }
+
+    if (resolvedSrc.is('online') &&
+      !_.endsWith(resolvedSrc.src, 'yaml' &&
+      !_.endsWith(resolvedSrc.src, 'yml'))) {
+      resolvedSrc.src += '/index.yaml'; // Todo: in case of a local folder and Windows, this might fail.
+    }
+
     if (resolvedSrc.isFile) {
-      // Todo: Error handling in case of an invalid .yaml file
       return yaml.safeLoad(fs.readFileSync(opts.src, 'utf8'));
     }
+    if (resolvedSrc.isUrl) {
+      opts.srcUrl = opts.src;
+      return this.downloadChartRepo(opts);
+    }
+    throw new Error('Could not determine the type of the `src`.');
 
   }
 
@@ -185,10 +196,11 @@ class HelmUtils {
   // Todo: Maybe nicer instead of having `children`: https://stackoverflow.com/questions/15690706/recursively-looping-through-an-object-to-build-a-property-list
   /**
    *
-   * @param filePath
-   * @returns {{path: *, name: string}}
+   * @param {String} filePath - The path to the file.
+   * @returns {WalkInfo} //Todo: WalkInfo needs to be created
    *
    * @private
+   * @static
    */
   static _walkChart(filePath) {
 
@@ -220,9 +232,11 @@ class HelmUtils {
   /**
    * Returns an array of all images from a given chart manifest.
    *
-   * @param chartManifest
+   * @param {Object} chartManifest
    *
    * @return {Array<String>} - Returns an array of images found in the given manifest.
+   *
+   * @static
    */
   static getImagesFromManifest(chartManifest) {
 
@@ -250,14 +264,15 @@ class HelmUtils {
   // HELPERS
   // *******************************************************************************************************************
 
-
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
   /**
    *
-   * @param obj
+   *
+   * @param {Object} obj
    * @returns {*}
    *
    * @private
+   * @static
    */
   static _getImagesFromObj(obj) {
 
@@ -304,10 +319,12 @@ class HelmUtils {
   }
 
   /**
+   * Ensure that a local directory exists. If not, it will be created.
    *
-   * @param dir
+   * @param {String} dir - The directory.
    *
    * @private
+   * @static
    */
   static _ensureDir(dir) {
     if (!fs.existsSync(dir)) {
@@ -316,10 +333,20 @@ class HelmUtils {
   }
 
   /**
+   * @typedef ResolveResult - The result.
+   * @property {Boolean} isUrl - Whether the given `src` is an online Url or not.
+   * @property {Boolean} isFile - Whether the given `src` is a local file or not.
+   * @property {String} is - The kind of `src`. Can be `online`, `local` or `unknown`.
+   */
+
+  /**
+   * Resolves a path an returns an object with some additional handline.
    *
-   * @param src
-   * @returns {*}
+   * @param {String} src - The source string.
+   * @returns {ResolveResult} - The result. // Todo: type resolution does not seem to work, yet.
+   *
    * @private
+   * @static
    */
   static _resolveSrc(src) {
 
@@ -333,7 +360,7 @@ class HelmUtils {
       return Object.assign(defaults, {
         is: 'online',
         isUrl: true
-      })
+      });
     }
 
     try {
@@ -341,12 +368,12 @@ class HelmUtils {
         return Object.assign(defaults, {
           is: 'local',
           isFile: true
-        })
+        });
       }
-    } catch(e) {
+    } catch (e) {
       return Object.assign(defaults, {
         error: e
-      })
+      });
     }
   }
 
