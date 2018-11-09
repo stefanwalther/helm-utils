@@ -1,5 +1,6 @@
 const helmUtils = require('./../../src');
 const path = require('path');
+const fs = require('fs-extra');
 
 const SAVE_PATH = path.resolve(__dirname, './../.tmp');
 
@@ -8,8 +9,8 @@ describe('[unit] => getChartVersions()', () => {
   beforeEach(async () => {
     return helmUtils._ensureDir(SAVE_PATH);
   });
-  afterEach(async () => {
-    //Todo: Delete .tmp (SAVE_PATH)
+  afterEach(() => {
+    fs.removeSync(SAVE_PATH);
   });
 
   it('throws an error if argument `opts` is missing.', async () => {

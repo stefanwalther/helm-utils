@@ -169,6 +169,12 @@ class HelmUtils {
   }
 
   /**
+   * @typedef {Object} ChartManifest
+   * @property
+   *
+   */
+
+  /**
    * Returns the manifest for a given chart.
    *
    * @function getManifestFromChart
@@ -241,7 +247,7 @@ class HelmUtils {
   /**
    * Returns an array of all images from a given chart manifest.
    *
-   * @param {Object} chartManifest
+   * @param {ChartManifest} chartManifest
    *
    * @return {Array<String>} - Returns an array of images found in the given manifest.
    *
@@ -342,16 +348,16 @@ class HelmUtils {
   }
 
   /**
-   * @typedef ResolveResult - The result.
-   * @property {Boolean} isUrl - Whether the given `src` is an online Url or not.
-   * @property {Boolean} isFile - Whether the given `src` is a local file or not.
-   * @property {String} is - The kind of `src`. Can be `online`, `local` or `unknown`.
+   * @typedef {Object} ResolveResult - The result.
+   * @property {boolean} isUrl - Whether the given `src` is an online Url or not.
+   * @property {boolean} isFile - Whether the given `src` is a local file or not.
+   * @property {string} is - The kind of `src`. Can be `online`, `local` or `unknown`.
    */
 
   /**
    * Resolves a path an returns an object with some additional handline.
    *
-   * @param {String} src - The source string.
+   * @param {string} src - The source string.
    * @returns {ResolveResult} - The result. // Todo: type resolution does not seem to work, yet.
    *
    * @private
