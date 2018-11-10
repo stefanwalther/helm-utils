@@ -1,8 +1,9 @@
-const helmUtils = require('./../../src/index');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const _ = require('lodash');
+
+const helmUtils = require('./../../src/index');
 
 describe('[integration-test]', () => {
   // Todo: re-organize the test a bit, to also be able to test other repos
@@ -42,6 +43,7 @@ describe('[integration-test]', () => {
       expect(manifest).to.have.a.property('name').to.be.equal(result.name);
       expect(manifest).to.have.a.property('children').to.be.an('array');
     });
+
     it('returns the images being used', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, result.name);

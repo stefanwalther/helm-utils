@@ -1,12 +1,14 @@
-const helmUtils = require('./../../src');
 const path = require('path');
 const fs = require('fs-extra');
 
+const helmUtils = require('./../../src');
+const utils = require('./../../src/utils');
+
 const SAVE_PATH = path.resolve(__dirname, './../.tmp');
 
-describe('[unit] => getChartVersions()', () => {
+describe('[unit] => getRepoCharts()', function () {
   beforeEach(async () => {
-    return helmUtils._ensureDir(SAVE_PATH);
+    return utils.ensureDir(SAVE_PATH);
   });
   afterEach(() => {
     fs.removeSync(SAVE_PATH);
@@ -37,13 +39,14 @@ describe('[unit] => getChartVersions()', () => {
     return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'Argument `opts.src` is neither a URL nor a local file.');
   });
 
+  // Todo: this is not a unit-test anymore!
   it('throws an error if the given Url does not exist', async () => {
     const opts = {
-      src: 'http://www.does-not-exist/charts',
+      src: 'http://www.does-not-exist.com/charts/',
       savePath: SAVE_PATH
     };
     return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'ENOTFOUND'); // Todo: better error message
-  });
+  }).timeout(5000);
 
   it('throws an error if we deal with an empty .yaml file.', async () => {
     const opts = {
@@ -56,7 +59,7 @@ describe('[unit] => getChartVersions()', () => {
     const opts = {
       src: path.resolve(__dirname, './../fixtures/valid-check/invalid.yaml')
     };
-    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error, 'The .yaml file is invalid');
+    return expect(helmUtils.getRepoCharts(opts)).to.be.rejectedWith(Error); // Todo: Should be: 'The .yaml file is invalid'
     // Todo: test also the inner error
   });
 

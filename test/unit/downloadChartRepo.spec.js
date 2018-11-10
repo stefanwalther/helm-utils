@@ -12,13 +12,6 @@ describe('[unit] => downloadChartRepo()', () => {
     return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.srcUrl` is not defined.');
   });
 
-  it('throws an error `opts.savePath` is not defined.', () => {
-    const opts = {
-      srcUrl: 'foo'
-    };
-    return expect(helmUtils.downloadChartRepo(opts)).to.be.rejectedWith(Error, '`opts.savePath` is not defined.');
-  });
-
   xit('defaults to the `opts.srcUrl` file path when storing the file in case `opts.saveToFile` is not provided.', () => {
     // Todo: not even sure if that makes sense ... needs to be revisited.
   });
