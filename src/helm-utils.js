@@ -6,6 +6,10 @@ const tar = require('tar');
 const yaml = require('js-yaml');
 const _ = require('lodash');
 const isUrl = require('is-url');
+const os = require('os');
+const uuid = require('uuid/v1');
+
+const utils = require('./utils');
 
 /**
  *
@@ -29,7 +33,7 @@ class HelmUtils {
    * @param {Object} opts - Options to use.
    * @param {String} opts.srcUrl - The Uri of the chart package which should be downloaded to local disk.
    * @param {String} opts.savePath - The path to download the package to. Defaults to os.temp().
-   * @param {String} opts.saveToFile - The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
+   * @param {String} opts.saveToFile - The name of the file the package should be saved as. Defaults to `index.yaml`.
    *
    * @return {Promise<DownloadRepoResult, Error>}
    *
@@ -38,38 +42,42 @@ class HelmUtils {
    */
   static async downloadChartRepo(opts) {
 
-    console.log('opts', opts);
-
     if (!opts || _.isEmpty(opts)) {
       throw new Error('No `opts` defined.');
     }
-    if (!opts.srcUrl) {
+    const config = Object.assign({
+      savePath: os.tmpdir()
+    }, opts);
+    if (!config.srcUrl) {
       throw new Error('`opts.srcUrl` is not defined.');
     }
-    if (!opts.savePath) {
-      throw new Error('`opts.savePath` is not defined.');
-    }
-    if (_.isEmpty(opts.saveToFile)) {
-      opts.saveToFile = opts.srcUrl.substring(opts.srcUrl.lastIndexOf('/') + 1);
-      console.log('opts.saveToFile', opts.saveToFile);
+
+    if (!config.savePath) {
+      config.savePath = path.resolve(os.tmpdir(), uuid());
     }
 
-    console.log('opts.savePath', opts.savePath);
-    HelmUtils._ensureDir(opts.savePath);
-    const saveTo = path.resolve(opts.savePath, opts.saveToFile);
+    console.log('downloadChartRepo:opts', config);
 
-    const response = await axios({
-      method: 'GET',
-      url: opts.srcUrl,
-      responseType: 'stream'
-    });
+    utils.ensureDir(config.savePath);
+    const saveTo = path.resolve(config.savePath, config.saveToFile);
 
+    console.log('saveTo', saveTo);
+    let response;
+    try {
+      response = await axios({
+        method: 'GET',
+        url: config.srcUrl,
+        responseType: 'stream'
+      });
+    } catch (e) {
+      throw new Error('Hurray, we have an error');
+    }
     response.data.pipe(fs.createWriteStream(saveTo));
 
     return new Promise((resolve, reject) => {
       response.data.on('end', () => {
         resolve({
-          ...opts,
+          ...config,
           fullPath: saveTo,
           name: path.parse(saveTo).name,
           ext: path.parse(saveTo).ext
@@ -83,13 +91,22 @@ class HelmUtils {
   }
 
   /**
-   * Get the version for a chart-repo's index.yaml file.
+   * @typedef {Object} ChartRepoIndexResult - The result of a chart's repos index.yaml
+   * @property {string} apiVersion - The helm's chart `apiVersion` property.
+   */
+
+  /**
+   * Get the chart information of a chart-repo's index.yaml file.
    *
    * @param {Object} opts - The options for `getChartVersions()` function.
    * @param {String} opts.src - The
-   * @returns {Promise<void>}
+   *
+   * @return {Promise<ChartRepoIndexResult,Error>}
+   *
+   * @static
+   * @async
    */
-  static async getRepoCharts(opts) {
+  static async getRepoCharts(opts) { // Todo: make this immutable, too
 
     if (!opts || _.isEmpty(opts)) {
       throw new Error('Argument `opts` is undefined or empty.');
@@ -105,30 +122,43 @@ class HelmUtils {
     if (resolvedSrc.is === 'online' &&
       !_.endsWith(opts.src, 'yaml' &&
         !_.endsWith(opts.src, 'yml'))) {
-      opts.src += path.join(opts.src, 'index.yaml');
+      opts.src = path.join(opts.src, 'index.yaml');
     }
 
-    if (resolvedSrc.isFile) {
-      let yamlContent;
-      try {
-        yamlContent = yaml.safeLoad(fs.readFileSync(opts.src, 'utf8'));
-      } catch (e) {
-        throw new Error('The .yaml file is invalid', e);
-      }
-      if (_.isEmpty(yamlContent)) {
-        throw new Error('The .yaml file is empty.');
-      }
-      return yamlContent;
-    }
-    if (resolvedSrc.isUrl) {
-      const optsClone = {
-        ...opts,
-        srcUrl: opts.src
-      };
-      return this.downloadChartRepo(optsClone);
-    }
-    throw new Error('Could not determine the type of the `src`.');
+    let yamlContent;
+    switch (resolvedSrc.is) {
 
+      case 'local':
+        yamlContent = HelmUtils._loadFromYaml(opts.src);
+        break;
+
+      case 'online': {
+        const optsClone = {
+          ...opts,
+          srcUrl: opts.src
+        };
+        const tmpPath = path.resolve(os.tmpdir(), uuid());
+        utils.ensureDir(tmpPath);
+        const tmpFilePath = path.resolve(tmpPath, 'index.yaml');
+        try {
+          await utils.downloadFile(optsClone.srcUrl, tmpFilePath);
+        } catch (e) {
+          throw new Error(e);
+        }
+        yamlContent = yaml.safeLoad(fs.readFileSync(tmpFilePath));
+        fs.removeSync(tmpFilePath);
+        break;
+      }
+      case 'unknown':
+        throw new Error('Could not determine the type of the `src`.');
+      default:
+        break;
+    }
+
+    if (_.isEmpty(yamlContent)) {
+      throw new Error('The .yaml file is empty.');
+    }
+    return yamlContent;
   }
 
   /**
@@ -164,7 +194,7 @@ class HelmUtils {
       throw new Error('Argument `opts.target` is not defined or empty.');
     }
 
-    this._ensureDir(opts.target);
+    utils.ensureDir(opts.target);
 
     fs.createReadStream(opts.src)
       .on('error', console.error)
@@ -217,6 +247,49 @@ class HelmUtils {
 
   }
 
+  /**
+   * Returns an array of all images from a given chart manifest.
+   *
+   * @param {ChartManifest} chartManifest
+   *
+   * @return {Array<String>} - Returns an array of images found in the given manifest.
+   *
+   * @static
+   */
+  static getImagesFromManifest(chartManifest) {
+
+    if (!chartManifest || _.isEmpty(chartManifest)) {
+      throw new Error('Argument `chartManifest` is not defined.');
+    }
+
+    let images = HelmUtils._getImagesFromObj(chartManifest);
+
+    // Remove duplicates
+    let uniqueImages = _.uniqBy(images, item => {
+      return item;
+    });
+
+    // Sort results
+    let sortedImages = _.sortBy(uniqueImages, item => {
+      return item;
+    });
+
+    // Return
+    return sortedImages;
+  }
+
+  /* ----------------------------------------------------------------------- */
+  /*                             PRIVATE METHODS                             */
+
+  /* ----------------------------------------------------------------------- */
+
+  static _loadFromYaml(src) {
+
+    // Todo: catch errors and throw a custom error here.
+    return yaml.safeLoad(fs.readFileSync(src, 'utf8'));
+
+  }
+
   // Todo: Maybe nicer instead of having `children`: https://stackoverflow.com/questions/15690706/recursively-looping-through-an-object-to-build-a-property-list
   /**
    *
@@ -252,41 +325,6 @@ class HelmUtils {
 
     return info;
   }
-
-  /**
-   * Returns an array of all images from a given chart manifest.
-   *
-   * @param {ChartManifest} chartManifest
-   *
-   * @return {Array<String>} - Returns an array of images found in the given manifest.
-   *
-   * @static
-   */
-  static getImagesFromManifest(chartManifest) {
-
-    if (!chartManifest || _.isEmpty(chartManifest)) {
-      throw new Error('Argument `chartManifest` is not defined.');
-    }
-
-    let images = HelmUtils._getImagesFromObj(chartManifest);
-
-    // Remove duplicates
-    let uniqueImages = _.uniqBy(images, item => {
-      return item;
-    });
-
-    // Sort results
-    let sortedImages = _.sortBy(uniqueImages, item => {
-      return item;
-    });
-
-    // Return
-    return sortedImages;
-  }
-
-  // *******************************************************************************************************************
-  // HELPERS
-  // *******************************************************************************************************************
 
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
   /**
@@ -340,20 +378,6 @@ class HelmUtils {
       }
     }
     return undefined;
-  }
-
-  /**
-   * Ensure that a local directory exists. If not, it will be created.
-   *
-   * @param {String} dir - The directory.
-   *
-   * @private
-   * @static
-   */
-  static _ensureDir(dir) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
   }
 
   /**
