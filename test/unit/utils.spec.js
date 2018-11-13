@@ -10,7 +10,6 @@ const utils = require('./../../src/utils');
 const testUtils = require('./../lib/testUtils.js');
 
 describe('[unit] => utils', () => {
-
   beforeEach(() => {
     testUtils.ensureTmp();
   });
@@ -52,7 +51,7 @@ describe('[unit] => utils', () => {
       expect(result).to.be.an('object').to.have.property('generated');
     });
 
-    it('returns an error if the online src does not exist', async() => {
+    it('returns an error if the online src does not exist', async () => {
       const src = 'http://does-not-exist/index.yaml';
 
       nock('http://does-not-exist')
@@ -65,5 +64,5 @@ describe('[unit] => utils', () => {
 
   describe('downloadFile()', () => {
 
-  })
+  });
 });

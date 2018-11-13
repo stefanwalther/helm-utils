@@ -69,7 +69,7 @@ module.exports = {
    * @param src
    * @returns {Promise<*>}
    */
-  loadFromYamlOnline: async (src) => {
+  loadFromYamlOnline: async src => {
 
     let response;
     try {
@@ -80,7 +80,7 @@ module.exports = {
       return yaml.safeLoad(response.data);
     } catch (err) {
       if (err && err.response && err.response.status && err.response.status === 404) {
-        throw new Error('The request failed with status code 404.')
+        throw new Error('The request failed with status code 404.');
       }
       throw new Error(err);
     }

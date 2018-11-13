@@ -58,15 +58,15 @@ class HelmUtils {
     }
 
     if (_.isEmpty(config.saveToFile)) {
-      config.saveToFile = config.srcUrl.substr(config.srcUrl.lastIndexOf('/')+1);
+      config.saveToFile = config.srcUrl.substr(config.srcUrl.lastIndexOf('/') + 1);
     }
 
-    console.log('downloadChartRepo:opts', config);
+    // Console.log('downloadChartRepo:opts', config);
 
     utils.ensureDir(config.savePath);
     const saveTo = path.resolve(config.savePath, config.saveToFile);
 
-    console.log('saveTo', saveTo);
+    // Console.log('saveTo', saveTo);
     let response;
     try {
       response = await axios({
@@ -126,11 +126,9 @@ class HelmUtils {
       throw new Error('Argument `opts.src` is neither a URL nor a local file.');
     }
 
-    if (r.meta.is === 'online' && ( !_.endsWith(opts.src, 'yaml' || !_.endsWith(opts.src, 'yml')))) {
+    if (r.meta.is === 'online' && (!_.endsWith(opts.src, 'yaml' || !_.endsWith(opts.src, 'yml')))) {
       opts.src = urlJoin(opts.src, 'index.yaml');
     }
-
-    console.log('opts.src', opts.src);
 
     switch (r.meta.is) {
 
@@ -204,15 +202,29 @@ class HelmUtils {
 
     utils.ensureDir(opts.target);
 
-    fs.createReadStream(opts.src)
-      .on('error', console.error)
-      .pipe(zlib.Unzip()) // eslint-disable-line new-cap
-      .on('error', e => console.error(e))
-      .pipe(tar.x({
-        cwd: opts.target,
-        strip: 1
-      }))
-      .on('error', e => console.error(e));
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(opts.src)
+        .on('error', err => {
+          console.error(err);
+          return reject(err);
+        })
+        .pipe(zlib.Unzip()) // eslint-disable-line new-cap
+        .on('error', e => {
+          console.error(e);
+          return reject(e);
+        })
+        .pipe(tar.x({
+          cwd: opts.target,
+          strip: 1
+        }))
+        .on('error', e => {
+          console.error(e);
+          return reject(e);
+        })
+        .on('end', () => {
+          return resolve(true);
+        });
+    });
   }
 
   /**

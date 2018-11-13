@@ -45,9 +45,12 @@ const formatRepoCharts = (opts) => {
     case 'table':
     default:
       for (let c in opts.repoInfo.result.entries) {
-        log(`Charts for ${c}:`);
+        // console.log(opts.repoInfo.result.entries[c]);
+        log(chalk.bold.green(`Charts for "${c}":`));
+        //log(chalk.gray(``));
         let table = new Table({
-          head: ['Name', 'Description', 'Version', 'Created', 'File']
+          style: {head: ['cyan']},
+          head: ['Name', 'Description', 'Version', 'Created', 'When', 'File']
         });
         for (let e in opts.repoInfo.result.entries[c]) {
           let entry = opts.repoInfo.result.entries[c][e];
@@ -56,6 +59,7 @@ const formatRepoCharts = (opts) => {
           row.push(entry.description);
           row.push(entry.version);
           row.push(moment(entry.created).format('YYYY-MM-DD hh:mm'));
+          row.push(moment(entry.created).fromNow());
           row.push(entry.urls.join(','));
           table.push(row);
         }

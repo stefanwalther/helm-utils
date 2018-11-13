@@ -12,7 +12,7 @@ module.exports = {
     fs.removeSync(TMP_DIR);
   },
   ensureTmp: () => {
-    utils.ensureDir(TMP_DIR)
+    utils.ensureDir(TMP_DIR);
   }
 
 };

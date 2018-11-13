@@ -7,9 +7,8 @@ const utils = require('./../../src/utils');
 const testUtils = require('./../lib/testUtils');
 
 describe('[unit] => getRepoCharts()', function () {
-
   beforeEach(() => {
-    testUtils.ensureTmp()
+    testUtils.ensureTmp();
   });
 
   afterEach(() => {

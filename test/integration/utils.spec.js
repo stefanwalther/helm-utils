@@ -3,7 +3,6 @@ const fs = require('fs');
 
 const utils = require('./../../src/utils');
 
-
 describe('[integration] => utils', () => {
   const TMP_DIR = path.resolve(__dirname, './../fixtures/.tmp');
 
