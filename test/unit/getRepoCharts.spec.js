@@ -4,14 +4,16 @@ const fs = require('fs-extra');
 const helmUtils = require('./../../src');
 const utils = require('./../../src/utils');
 
-const SAVE_PATH = path.resolve(__dirname, './../.tmp');
+const testUtils = require('./../lib/testUtils');
 
 describe('[unit] => getRepoCharts()', function () {
-  beforeEach(async () => {
-    return utils.ensureDir(SAVE_PATH);
+
+  beforeEach(() => {
+    testUtils.ensureTmp()
   });
+
   afterEach(() => {
-    fs.removeSync(SAVE_PATH);
+    testUtils.cleanTmp();
   });
 
   it('throws an error if argument `opts` is missing.', async () => {
@@ -40,7 +42,7 @@ describe('[unit] => getRepoCharts()', function () {
   });
 
   // Todo: this is not a unit-test anymore!
-  it('throws an error if the given Url does not exist', async () => {
+  xit('throws an error if the given Url does not exist', async () => {
     const opts = {
       src: 'http://www.does-not-exist.com/charts/',
       savePath: SAVE_PATH
@@ -67,11 +69,13 @@ describe('[unit] => getRepoCharts()', function () {
 
   it('returns an object with expected properties.', async () => {
     const srcLocal = path.resolve(__dirname, './../fixtures/repo-index/index-variant-1.yaml');
-    let result = await helmUtils.getRepoCharts({src: srcLocal});
-    expect(result).to.exist;
-    expect(result).to.be.an('object').to.have.property('apiVersion', 'v1');
-    expect(result).to.be.an('object').to.have.property('entries').to.have.a.property('qsefe');
-    expect(result).to.be.an('object').to.have.property('generated');
+    let r = await helmUtils.getRepoCharts({src: srcLocal});
+    expect(r).to.exist;
+    expect(r).to.have.a.property('meta');
+    expect(r).to.have.a.property('result');
+    expect(r.result).to.be.an('object').to.have.property('apiVersion', 'v1');
+    expect(r.result).to.be.an('object').to.have.property('entries').to.have.a.property('qsefe');
+    expect(r.result).to.be.an('object').to.have.property('generated');
   });
 
   it('allows to filter by chart repo.');

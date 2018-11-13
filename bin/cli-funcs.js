@@ -28,21 +28,29 @@ const formatGetImages = (opts) => {
 
 const formatRepoCharts = (opts) => {
 
-  let result = opts.result;
+  if (opts.argv.verbose) {
+    log('--');
+    log('Here is the meta result \n', opts.repoInfo.meta);
+    log('-');
+    log('Here is the result \n', opts.repoInfo.result);
+    log('-');
+    log('opts.argv', opts.argv);
+    log('---');
+  }
 
   switch (opts.argv.format) {
     case 'json':
-      console.log(result);
+      log(opts.repoInfo.result);
       break;
-    case 'verbose':
+    case 'table':
     default:
-      for (let c in result.entries) {
+      for (let c in opts.repoInfo.result.entries) {
         log(`Charts for ${c}:`);
         let table = new Table({
-          head: ['Name', 'Description', 'Version', 'Created', 'Url']
+          head: ['Name', 'Description', 'Version', 'Created', 'File']
         });
-        for (let e in result.entries[c]) {
-          let entry = result.entries[c][e];
+        for (let e in opts.repoInfo.result.entries[c]) {
+          let entry = opts.repoInfo.result.entries[c][e];
           let row = [];
           row.push(entry.name);
           row.push(entry.description);
@@ -75,7 +83,7 @@ module.exports = {
 
     let result = await helmUtils.getRepoCharts({src: argv.repoUri});
 
-    formatRepoCharts({argv, result});
+    formatRepoCharts({argv, repoInfo: result}); // Todo: What a bullshit, fix that.
 
   }
 

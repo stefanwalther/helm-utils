@@ -1,6 +1,8 @@
+const axios = require('axios');
 const download = require('download');
 const fs = require('fs-extra');
 const path = require('path');
+const yaml = require('js-yaml');
 
 const ensureDir = function (dir) {
   if (!fs.existsSync(dir)) {
@@ -13,6 +15,9 @@ module.exports = {
 
   // Todo: as we already use axios, we should get rid of `download` and use axios again.
   downloadFile: async (src, target) => {
+
+    console.log('downloadFile:src', src);
+    console.log('downloadFile:target', target);
 
     return download(src)
       .then(data => {
@@ -59,8 +64,26 @@ module.exports = {
    */
   ensureDir,
 
-  loadFromYamlOnline: () => {
+  /**
+   *
+   * @param src
+   * @returns {Promise<*>}
+   */
+  loadFromYamlOnline: async (src) => {
 
+    let response;
+    try {
+      response = await axios({
+        method: 'GET',
+        url: src
+      });
+      return yaml.safeLoad(response.data);
+    } catch (err) {
+      if (err && err.response && err.response.status && err.response.status === 404) {
+        throw new Error('The request failed with status code 404.')
+      }
+      throw new Error(err);
+    }
   }
 
 };

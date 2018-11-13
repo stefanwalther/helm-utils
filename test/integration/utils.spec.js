@@ -3,23 +3,9 @@ const fs = require('fs');
 
 const utils = require('./../../src/utils');
 
+
 describe('[integration] => utils', () => {
   const TMP_DIR = path.resolve(__dirname, './../fixtures/.tmp');
-
-  describe('ensureDir()', () => {
-    it('creates a directory if it not exists', () => {
-      const dir = path.resolve(TMP_DIR, 'does-not-exist');
-      utils.ensureDir(dir);
-      expect(fs.existsSync(dir)).to.be.true;
-    });
-
-    it('is just silent if the directory already exists', () => {
-      const dir = path.resolve(TMP_DIR, 'does-not-exist', '1', '2', '3');
-      utils.ensureDir(dir);
-      expect(fs.existsSync(dir)).to.be.true;
-      utils.ensureDir(dir);
-    });
-  });
 
   describe('downloadFile()', () => {
     it('downloads a file', async () => {

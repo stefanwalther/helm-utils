@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const _ = require('lodash');
+const uuid = require('uuid/v1');
 
 const helmUtils = require('./../../src/index');
 
@@ -11,7 +12,7 @@ describe('[integration-test]', () => {
     const chartName = 'qsefe-0.1.36.tgz';
     const opts = {
       srcUrl: `https://qlik.bintray.com/stable/${chartName}`,
-      savePath: os.tmpdir()
+      savePath: path.resolve(os.tmpdir(), uuid())
     };
 
     it('downloads a chart tgz and returns an object', async () => {

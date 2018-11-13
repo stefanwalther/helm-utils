@@ -1,5 +1,7 @@
 const fs = require('fs');
 const os = require('os');
+const uuid = require('uuid/v1');
+const path = require('path');
 
 const helmUtils = require('./../../src/index');
 
@@ -12,7 +14,7 @@ describe('[integration] => downloadChartRepo', () => {
     }
   ];
   const opts = {
-    savePath: os.tmpdir()
+    savePath: path.resolve(os.tmpdir(), uuid())
   };
 
   runs.forEach(item => {
@@ -22,7 +24,7 @@ describe('[integration] => downloadChartRepo', () => {
         ...opts
       });
       return expect(fs.existsSync(result.fullPath)).to.be.true;
-    });
+    }).timeout(4000);
   });
 
   it('works with both, an Url ending with .yaml and also just the folder src');

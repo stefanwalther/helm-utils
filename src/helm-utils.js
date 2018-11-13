@@ -1,6 +1,6 @@
 const axios = require('axios');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const zlib = require('zlib');
 const tar = require('tar');
 const yaml = require('js-yaml');
@@ -8,6 +8,7 @@ const _ = require('lodash');
 const isUrl = require('is-url');
 const os = require('os');
 const uuid = require('uuid/v1');
+const urlJoin = require('url-join');
 
 const utils = require('./utils');
 
@@ -56,6 +57,10 @@ class HelmUtils {
       config.savePath = path.resolve(os.tmpdir(), uuid());
     }
 
+    if (_.isEmpty(config.saveToFile)) {
+      config.saveToFile = config.srcUrl.substr(config.srcUrl.lastIndexOf('/')+1);
+    }
+
     console.log('downloadChartRepo:opts', config);
 
     utils.ensureDir(config.savePath);
@@ -91,62 +96,55 @@ class HelmUtils {
   }
 
   /**
-   * @typedef {Object} ChartRepoIndexResult - The result of a chart's repos index.yaml
-   * @property {string} apiVersion - The helm's chart `apiVersion` property.
+   * @typedef {Object} ChartRepoResult - The result of a chart's repos index.yaml
+   * @property {Object} meta - Some meta information
+   * @property {Object} result - The result (content of the index.yaml file).
+   * @property {string} result.apiVersion - The helm's chart `apiVersion` property.
    */
 
   /**
    * Get the chart information of a chart-repo's index.yaml file.
    *
    * @param {Object} opts - The options for `getChartVersions()` function.
-   * @param {String} opts.src - The
+   * @param {String} opts.src - The source to load from. This can be a local file or a Url.
    *
-   * @return {Promise<ChartRepoIndexResult,Error>}
+   * @return ChartRepoResult
    *
    * @static
    * @async
    */
-  static async getRepoCharts(opts) { // Todo: make this immutable, too
+  static async getRepoCharts(opts) {
 
-    if (!opts || _.isEmpty(opts)) {
-      throw new Error('Argument `opts` is undefined or empty.');
-    }
-    if (!opts.src || _.isEmpty(opts.src)) {
-      throw new Error('Argument `opts.src` is undefined or empty.');
-    }
-    let resolvedSrc = HelmUtils._resolveSrc(opts.src);
-    if (resolvedSrc.is === 'unknown') {
+    let r = {
+      meta: {},
+      result: {}
+    };
+    HelmUtils._getRepoChartValidation(opts);
+
+    r.meta = HelmUtils._resolveSrc(opts.src);
+    if (r.meta.is === 'unknown') {
       throw new Error('Argument `opts.src` is neither a URL nor a local file.');
     }
 
-    if (resolvedSrc.is === 'online' &&
-      !_.endsWith(opts.src, 'yaml' &&
-        !_.endsWith(opts.src, 'yml'))) {
-      opts.src = path.join(opts.src, 'index.yaml');
+    if (r.meta.is === 'online' && ( !_.endsWith(opts.src, 'yaml' || !_.endsWith(opts.src, 'yml')))) {
+      opts.src = urlJoin(opts.src, 'index.yaml');
     }
 
-    let yamlContent;
-    switch (resolvedSrc.is) {
+    console.log('opts.src', opts.src);
+
+    switch (r.meta.is) {
 
       case 'local':
-        yamlContent = HelmUtils._loadFromYaml(opts.src);
+        r.result = HelmUtils._loadFromYaml(opts.src);
         break;
 
       case 'online': {
-        const optsClone = {
-          ...opts,
-          srcUrl: opts.src
-        };
-        const tmpPath = path.resolve(os.tmpdir(), uuid());
-        utils.ensureDir(tmpPath);
-        const tmpFilePath = path.resolve(tmpPath, 'index.yaml');
         try {
-          await utils.downloadFile(optsClone.srcUrl, tmpFilePath);
+          r.result = await utils.loadFromYamlOnline(opts.src);
         } catch (e) {
+          console.error(e);
           throw new Error(e);
         }
-        yamlContent = yaml.safeLoad(fs.readFileSync(tmpFilePath));
-        fs.removeSync(tmpFilePath);
         break;
       }
       case 'unknown':
@@ -155,10 +153,20 @@ class HelmUtils {
         break;
     }
 
-    if (_.isEmpty(yamlContent)) {
+    if (_.isEmpty(r.result)) {
       throw new Error('The .yaml file is empty.');
     }
-    return yamlContent;
+
+    return r;
+  }
+
+  static _getRepoChartValidation(opts) {
+    if (!opts || _.isEmpty(opts)) {
+      throw new Error('Argument `opts` is undefined or empty.');
+    }
+    if (!opts.src || _.isEmpty(opts.src)) {
+      throw new Error('Argument `opts.src` is undefined or empty.');
+    }
   }
 
   /**
