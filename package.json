@@ -57,15 +57,15 @@
     "yargs": "^12.0.2"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "codecov": "^3.1.0",
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "codecov": "3.1.0",
     "documentation": "9.0.0-alpha.1",
-    "eslint": "^5.8.0",
-    "eslint-config-space-single": "^0.3.5",
     "husky": "^1.1.3",
-    "mocha": "^5.2.0",
     "nock": "^10.0.2",
-    "nyc": "^13.1.0"
+    "eslint": "5.8.0",
+    "eslint-config-space-single": "0.3.5",
+    "mocha": "5.2.0",
+    "nyc": "13.1.0"
   }
 }
