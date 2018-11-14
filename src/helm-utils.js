@@ -303,7 +303,7 @@ class HelmUtils {
   /*                             JSDoc Typedefs                              */
   /* ----------------------------------------------------------------------- */
 
- /**
+  /**
    * @typedef {Object} DownloadRepoResult
    * @property {String} srcUrl - The passed in `srcUrl` property.
    * @property {String} savePath - The passed in `savePath` property.
