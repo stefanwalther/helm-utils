@@ -34,7 +34,7 @@ Download the helm chart repo to a local folder.
 -   `opts` **[Object][21]** Options to use.
     -   `opts.srcUrl` **[String][22]** The Uri of the chart package which should be downloaded to local disk.
     -   `opts.savePath` **[String][22]** The path to download the package to. Defaults to a newly created directory in `os.temp()`.
-    -   `opts.saveToFile` **[String][22]** The name of the file the package should be saved as. Defaults to name of the downloaded file.
+    -   `opts.saveToFile` **[String][22]** The name of the file the package should be saved as. Defaults to `index.yaml`'.
 
 #### Examples
 
@@ -45,8 +45,8 @@ Downloading with default values
 const opts = {
   srcUrl: 'https://chart-repo.com/charts/chart_v1.0.0.tgz'
 };
-let downloadRepoResult = await downloadChartRepo(opts);
 // returns a DownloadRepoResult object
+let downloadRepoResult = await downloadChartRepo(opts);
 ```
 
 Returns **[Promise][23]&lt;[DownloadRepoResult][24], [Error][25]>** 

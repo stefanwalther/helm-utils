@@ -3,6 +3,27 @@ const fn = require('./cli-funcs');
 const yargs = require('yargs');
 
 yargs
+  .wrap(Math.min(100, yargs.terminalWidth()))
+  .command({
+    command: 'get-charts <repo-uri> [format]',
+    alias: ['gc'],
+    desc: 'Get the charts from a given chart repository.',
+    builder: yargs => {
+      yargs.positional('repoUri', {
+        type: 'string',
+        describe: 'the repository Uri'
+      }).positional('format', {
+        type: 'string',
+        describe: 'How to format the output.',
+        choices: ['table', 'json'],
+        default: 'table'
+      })
+    },
+    handler: async (argv) => {
+      await fn.upgradeCheck(argv);
+      await fn.getRepoCharts(argv)
+    }
+  })
   .command({
     command: 'get-images <chart-url> [format]',
     alias: ['gi'],
@@ -20,25 +41,6 @@ yargs
     },
     handler: (argv) => {
       fn.getImages(argv);
-    }
-  })
-  .command({
-    command: 'get-charts <repo-uri> [format]',
-    alias: ['gc'],
-    desc: 'Get the charts from a given chart repository.',
-    builder: yargs => {
-      yargs.positional('repoUri', {
-        type: 'string',
-        describe: 'the repository Uri'
-      }).positional('format', {
-        type: 'string',
-        describe: 'How to format the output.',
-        choices: ['table', 'json'],
-        default: 'table'
-      })
-    },
-    handler: (argv) => {
-      fn.getRepoCharts(argv)
     }
   })
   .option('verbose', {

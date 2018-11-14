@@ -1,11 +1,13 @@
 const log = console.log;
-const fs = require('fs');
 const chalk = require('chalk');
 const helmUtils = require('./../src/helm-utils');
 const os = require('os');
 const path = require('path');
 const Table = require('cli-table');
 const moment = require('moment');
+const packageInfo = require('package-info');
+const semver = require('semver');
+const readPkg = require('read-pkg-up');
 
 const formatGetImages = (opts) => {
 
@@ -53,7 +55,7 @@ const formatRepoCharts = (opts) => {
         let table = new Table({
           style: {head: ['cyan']},
           head: ['Name', 'Description', 'Version', 'Created', 'When', 'Url'],
-          colWidths: [20,40,10,20,15,70]
+          colWidths: [20, 40, 10, 20, 15, 70]
         });
         for (let e in opts.repoInfo.result.entries[c]) {
           let entry = opts.repoInfo.result.entries[c][e];
@@ -95,9 +97,40 @@ module.exports = {
   getRepoCharts: async (argv) => {
 
     let result = await helmUtils.getRepoCharts({src: argv.repoUri});
-    console.dir(result, { depth: null });
+    // console.dir(result, {depth: null});
 
     formatRepoCharts({argv, repoInfo: result});
+
+  },
+
+  upgradeCheck: async (argv) => {
+
+    let info;
+    try {
+      info = await packageInfo('helm-utils');
+    }
+    catch (e) {
+      // OK, we suppress this here ...
+    }
+
+    // always suppress errors
+    try {
+      if (info) {
+        let localVersion = await readPkg().version;
+        let onlineVersion = info.version;
+        if (semver.compare(localVersion, onlineVersion) === -1) {
+          log('');
+          log(chalk.green('A newer version of is available'));
+          log(chalk.gray(`Current version: ${localVersion}`));
+          log(chalk.gray(`Available version: ${onlineVersion}`));
+          log('');
+          log('Use `npm install -g helm-utils to ugprade.');
+          log('');
+        }
+      }
+    } catch (e) {
+      // eat it ...
+    }
 
   }
 
