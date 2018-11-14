@@ -1,12 +1,11 @@
 
-### get-charts <repo-uri> [format]
+### get-charts &lt;repo-uri&gt; \[format]
 
 Return all charts from either an online or local chart repository.
-
-_Note:_ This basically does the same as `helm search`, but with some additional sugar functionality.
+This basically does the same as `helm search`, but with some additional sugar functionality.
 
 <details>
-  <summary><strong>Details & Example</strong></summary>
+  <summary>Example</summary>
   
   ```bash
   $ helm-utils get-charts https://charts.jfrog.io/
@@ -17,12 +16,12 @@ _Note:_ This basically does the same as `helm search`, but with some additional 
   
 </details>
 
-### get-images <chart-url> [format]
+### get-images &lt;chart-url&gt; \[format]
 
 Return all docker images from a given helm-chart.
 
 <details>
-  <summary><strong>Details & Example</strong></summary>
+  <summary>Example</summary>
 
   ```bash
   $  helm-utils get-images https://charts.jfrog.io/artifactory/helm/xray-0.5.2.tgz
@@ -47,7 +46,7 @@ Return all docker images from a given helm-chart.
 ### help
 
 <details>
-  <summary>Details & Example</summary>
+  <summary>Example</summary>
 Show the help for `helm-utils`.
 
 ```
