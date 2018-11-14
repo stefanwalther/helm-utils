@@ -8,6 +8,7 @@ const Table = require('cli-table');
 const moment = require('moment');
 
 const formatGetImages = (opts) => {
+
   switch (opts.argv.format) {
     case 'json':
       console.log(opts.images);
@@ -51,7 +52,8 @@ const formatRepoCharts = (opts) => {
         //log(chalk.gray(``));
         let table = new Table({
           style: {head: ['cyan']},
-          head: ['Name', 'Description', 'Version', 'Created', 'When', 'File']
+          head: ['Name', 'Description', 'Version', 'Created', 'When', 'Url'],
+          colWidths: [20,40,10,20,15,70]
         });
         for (let e in opts.repoInfo.result.entries[c]) {
           let entry = opts.repoInfo.result.entries[c][e];
@@ -93,6 +95,7 @@ module.exports = {
   getRepoCharts: async (argv) => {
 
     let result = await helmUtils.getRepoCharts({src: argv.repoUri});
+    console.dir(result, { depth: null });
 
     formatRepoCharts({argv, repoInfo: result});
 

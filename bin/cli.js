@@ -11,7 +11,12 @@ yargs
       yargs.positional('chartUrl', {
         type: 'string',
         describe: 'the chart Url'
-      });
+      }).positional('format', {
+        type: 'string',
+        describe: 'How to format the output.',
+        choices: ['list', 'json'],
+        default: 'list'
+      })
     },
     handler: (argv) => {
       fn.getImages(argv);
@@ -25,6 +30,11 @@ yargs
       yargs.positional('repoUri', {
         type: 'string',
         describe: 'the repository Uri'
+      }).positional('format', {
+        type: 'string',
+        describe: 'How to format the output.',
+        choices: ['table', 'json'],
+        default: 'table'
       })
     },
     handler: (argv) => {
@@ -35,12 +45,6 @@ yargs
     type: 'boolean',
     alias: ['v'],
     default: false
-  })
-  .option('format', {
-    type: 'string',
-    describe: 'How to format the output',
-    choices: ['table', 'json'],
-    default: 'table'
   })
   .demandCommand(1, 'You need ad least one command before moving on')
   .showHelpOnFail(false, 'Specify -help for available options')
