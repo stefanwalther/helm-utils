@@ -17,7 +17,7 @@ _Note:_ This basically does the same as `helm search`, but with some additional 
   
 </details>
 
-### `get-images <chart-url>`
+### `get-images <chart-url> [format]`
 
 > Return all docker images from a given helm-chart.
 
@@ -37,9 +37,10 @@ _Note:_ This basically does the same as `helm search`, but with some additional 
   - bitnami/mongodb:3.6.4
   - postgres
   - rabbitmq:3.7-alpine
-  
-
   ```  
+  
+  Options: 
+    - `--format` - How to format the output, `list` or `json`. Defaults to `list`.
 </details>
 
 
