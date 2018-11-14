@@ -11,6 +11,7 @@ const uuid = require('uuid/v1');
 const urlJoin = require('url-join');
 
 const utils = require('./utils');
+const DetailedError = require('./detailed-error');
 
 /**
  *
@@ -19,28 +20,28 @@ const utils = require('./utils');
 class HelmUtils {
 
   /**
-   * @typedef {Object} DownloadRepoResult
-   * @property {String} srcUrl - The passed in `srcUrl` property.
-   * @property {String} savePath - The passed in `savePath` property.
-   * @property {String} saveToFile - The passed in `saveToFile` property.
-   * @property {String} fullPath - The full path of the downloaded file.
-   * @property {String} name - The filename.
-   * @property {String} ext - The filename's extension.
-   */
-
-  /**
    * Download the helm chart repo to a local folder.
    *
    * @param {Object} opts - Options to use.
    * @param {String} opts.srcUrl - The Uri of the chart package which should be downloaded to local disk.
-   * @param {String} opts.savePath - The path to download the package to. Defaults to os.temp().
-   * @param {String} opts.saveToFile - The name of the file the package should be saved as. Defaults to `index.yaml`.
+   * @param {String} opts.savePath - The path to download the package to. Defaults to a newly created directory in `os.temp()`.
+   * @param {String} opts.saveToFile - The name of the file the package should be saved as. Defaults to `index.yaml`'.
+   *
+   * @example <caption>Downloading with default values</caption>
+   *
+   * const opts = {
+   *   srcUrl: 'https://chart-repo.com/charts/chart_v1.0.0.tgz'
+   * };
+   * // returns a DownloadRepoResult object
+   * let downloadRepoResult = await downloadChartRepo(opts);
    *
    * @return {Promise<DownloadRepoResult, Error>}
    *
    * @async
    * @static
    */
+  // Todo: The result needs to reflect whether we have successfully downloaded a zip file ...
+  // Todo: Can be completely simplified as we are not downloading a binary file!
   static async downloadChartRepo(opts) {
 
     if (!opts || _.isEmpty(opts)) {
@@ -52,6 +53,9 @@ class HelmUtils {
     if (!config.srcUrl) {
       throw new Error('`opts.srcUrl` is not defined.');
     }
+    if (!_.endsWith(config.srcUrl, 'tgz')) {
+      throw new Error('`opts.srcUrl` is not pointing to a .tgz file.');
+    }
 
     if (!config.savePath) {
       config.savePath = path.resolve(os.tmpdir(), uuid());
@@ -60,8 +64,6 @@ class HelmUtils {
     if (_.isEmpty(config.saveToFile)) {
       config.saveToFile = config.srcUrl.substr(config.srcUrl.lastIndexOf('/') + 1);
     }
-
-    // Console.log('downloadChartRepo:opts', config);
 
     utils.ensureDir(config.savePath);
     const saveTo = path.resolve(config.savePath, config.saveToFile);
@@ -75,7 +77,7 @@ class HelmUtils {
         responseType: 'stream'
       });
     } catch (e) {
-      throw new Error('Hurray, we have an error');
+      throw new DetailedError(`The requested chart cannot be downloaded. (${e.message})`);
     }
     response.data.pipe(fs.createWriteStream(saveTo));
 
@@ -187,6 +189,7 @@ class HelmUtils {
    *
    * @async
    * @static
+   * @private // just to hide in JSDocs
    */
   static async unzip(opts) {
 
@@ -236,11 +239,9 @@ class HelmUtils {
   /**
    * Returns the manifest for a given chart.
    *
-   * @function getManifestFromChart
-
    * @param {Object} opts - Options for `getManifestFromChart()`.
    * @param {String} opts.loadFromDir - The (local) directory from which the chart should be loaded from.
-
+   *
    * @returns {ChartManifest}, to be resolved on success and rejected on failure.
    *
    * @example
@@ -299,8 +300,21 @@ class HelmUtils {
   }
 
   /* ----------------------------------------------------------------------- */
-  /*                             PRIVATE METHODS                             */
+  /*                             JSDoc Typedefs                              */
+  /* ----------------------------------------------------------------------- */
 
+ /**
+   * @typedef {Object} DownloadRepoResult
+   * @property {String} srcUrl - The passed in `srcUrl` property.
+   * @property {String} savePath - The passed in `savePath` property.
+   * @property {String} saveToFile - The passed in `saveToFile` property.
+   * @property {String} fullPath - The full path of the downloaded file.
+   * @property {String} name - The filename.
+   * @property {String} ext - The filename's extension.
+   */
+
+  /* ----------------------------------------------------------------------- */
+  /*                             PRIVATE METHODS                             */
   /* ----------------------------------------------------------------------- */
 
   static _loadFromYaml(src) {
@@ -311,10 +325,22 @@ class HelmUtils {
   }
 
   // Todo: Maybe nicer instead of having `children`: https://stackoverflow.com/questions/15690706/recursively-looping-through-an-object-to-build-a-property-list
+
+  /**
+   * @typedef {object} WalkInfo
+   * @property {string} path - The file path.
+   * @property {string} name - The file basename.
+   * @property {string} type - Either `folder` or `file`.
+   * @property {boolean} isDir - Whether the current item is a directory or not.
+   * @property {string} extname - The file's extension.
+   * @property {object} object - The object in case we are dealing with a .yaml file.
+   * @property {array<object>} children - The children for the given item.
+   */
+
   /**
    *
    * @param {String} filePath - The path to the file.
-   * @returns {WalkInfo} //Todo: WalkInfo needs to be created
+   * @returns {WalkInfo}
    *
    * @private
    * @static

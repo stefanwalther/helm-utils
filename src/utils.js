@@ -14,6 +14,10 @@ const ensureDir = function (dir) {
 module.exports = {
 
   // Todo: as we already use axios, we should get rid of `download` and use axios again.
+  /**
+   *
+   * @private
+   */
   downloadFile: async (src, target) => {
 
     console.log('downloadFile:src', src);
@@ -61,6 +65,8 @@ module.exports = {
    * Ensure that a local directory exists. If not, it will be created (recursively).
    *
    * @param {String} dir - The directory to be ensured.
+   *
+   * @private
    */
   ensureDir,
 
@@ -68,6 +74,8 @@ module.exports = {
    *
    * @param src
    * @returns {Promise<*>}
+   *
+   * @private
    */
   loadFromYamlOnline: async src => {
 

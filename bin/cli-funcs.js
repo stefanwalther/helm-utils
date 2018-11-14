@@ -1,4 +1,5 @@
 const log = console.log;
+const fs = require('fs');
 const chalk = require('chalk');
 const helmUtils = require('./../src/helm-utils');
 const os = require('os');
@@ -74,9 +75,15 @@ module.exports = {
 
   getImages: async (argv) => {
 
-    let result = await helmUtils.downloadChartRepo({srcUrl: argv.chartUrl, savePath: os.tmpdir()});
-    const unzipDir = path.join(result.savePath, result.name);
-    await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+    let downloadResult;
+    try {
+      downloadResult = await helmUtils.downloadChartRepo({srcUrl: argv.chartUrl, savePath: os.tmpdir()});
+    }
+    catch (e) {
+      return log(chalk.red(e));
+    }
+    const unzipDir = path.join(downloadResult.savePath, downloadResult.name);
+    await helmUtils.unzip({src: downloadResult.fullPath, target: unzipDir});
     let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
     let images = await helmUtils.getImagesFromManifest(manifest);
 
@@ -87,7 +94,7 @@ module.exports = {
 
     let result = await helmUtils.getRepoCharts({src: argv.repoUri});
 
-    formatRepoCharts({argv, repoInfo: result}); // Todo: What a bullshit, fix that.
+    formatRepoCharts({argv, repoInfo: result});
 
   }
 
