@@ -1,7 +1,7 @@
 
-### `get-charts <repo-uri> [format]`
+### get-charts <repo-uri> [format]
 
-> Return all charts from either an online or local chart repository.
+Return all charts from either an online or local chart repository.
 
 _Note:_ This basically does the same as `helm search`, but with some additional sugar functionality.
 
@@ -17,9 +17,9 @@ _Note:_ This basically does the same as `helm search`, but with some additional 
   
 </details>
 
-### `get-images <chart-url> [format]`
+### get-images <chart-url> [format]
 
-> Return all docker images from a given helm-chart.
+Return all docker images from a given helm-chart.
 
 <details>
   <summary><strong>Details & Example</strong></summary>
@@ -44,7 +44,7 @@ _Note:_ This basically does the same as `helm search`, but with some additional 
 </details>
 
 
-### `help`
+### help
 
 <details>
   <summary>Details & Example</summary>
