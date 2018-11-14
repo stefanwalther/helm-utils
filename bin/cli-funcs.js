@@ -7,7 +7,7 @@ const Table = require('cli-table');
 const moment = require('moment');
 const packageInfo = require('package-info');
 const semver = require('semver');
-const readPkg = require('read-pkg-up');
+const readPkgUp = require('read-pkg-up');
 
 const formatGetImages = (opts) => {
 
@@ -116,19 +116,21 @@ module.exports = {
     // always suppress errors
     try {
       if (info) {
-        let localVersion = await readPkg().version;
+        let pkgUp = await readPkgUp();
+        let localVersion = pkgUp.pkg.version;
         let onlineVersion = info.version;
         if (semver.compare(localVersion, onlineVersion) === -1) {
+          log(chalk.green(`A newer version of '${chalk.bold('helm-utils')}' is available:`));
+          log(chalk.gray(`\tCurrent version: ${localVersion}`));
+          log(chalk.gray(`\tAvailable version: ${onlineVersion}`));
           log('');
-          log(chalk.green('A newer version of is available'));
-          log(chalk.gray(`Current version: ${localVersion}`));
-          log(chalk.gray(`Available version: ${onlineVersion}`));
-          log('');
-          log('Use `npm install -g helm-utils to ugprade.');
+          log('Use `npm install -g helm-utils` to upgrade.');
+          log('--');
           log('');
         }
       }
     } catch (e) {
+      console.log(e);
       // eat it ...
     }
 
