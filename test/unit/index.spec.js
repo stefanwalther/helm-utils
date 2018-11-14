@@ -2,9 +2,10 @@ const helmUtils = require('./../../src/index');
 const path = require('path');
 
 describe('[unit] => helm-utils', () => {
-  it('exposes some static functions', () => {
+  it('exposes some static (not hidden) functions', () => {
     expect(helmUtils).to.have.property('downloadChartRepo').to.be.a('function');
-    expect(helmUtils).to.have.property('unzip').to.be.a('function');
+    expect(helmUtils).to.have.property('getRepoCharts').to.be.a('function');
+    expect(helmUtils).to.have.property('getManifestFromChart').to.be.a('function');
   });
 
   describe('_resolveSrc', () => {

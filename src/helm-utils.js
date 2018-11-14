@@ -191,7 +191,7 @@ class HelmUtils {
    * @static
    * @private // just to hide in JSDocs
    */
-  static async unzip(opts) {
+  static async _unzip(opts) {
 
     if (!opts || _.isEmpty(opts)) {
       throw new Error('Argument `opts` is not defined or empty.');

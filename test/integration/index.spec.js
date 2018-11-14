@@ -26,33 +26,33 @@ describe('[integration-test]', () => {
     it('downloads the chart and saves it to the expected folder', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       expect(fs.existsSync(result.fullPath)).to.be.true;
-    });
+    }).timeout(5000);
 
     it('unzips properly', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, result.name);
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       expect(fs.existsSync(unzipDir));
-    });
+    }).timeout(5000);
 
     it('can return a proper manifest', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       expect(manifest).to.be.an('object');
       expect(manifest).to.have.a.property('name').to.be.equal(result.name);
       expect(manifest).to.have.a.property('children').to.be.an('array');
-    });
+    }).timeout(5000);
 
     it('returns the images being used', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, result.name);
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       let images = await helmUtils.getImagesFromManifest(manifest);
       expect(images).to.exist.and.to.be.an('array');
-    });
+    }).timeout(5000);
   });
 
   it('handles properly a 404 of a resource');

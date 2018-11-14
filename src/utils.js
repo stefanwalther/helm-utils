@@ -81,10 +81,7 @@ module.exports = {
 
     let response;
     try {
-      response = await axios({
-        method: 'GET',
-        url: src
-      });
+      response = await axios.get(src);
       return yaml.safeLoad(response.data);
     } catch (err) {
       if (err && err.response && err.response.status && err.response.status === 404) {

@@ -24,7 +24,7 @@ describe('[integration] => downloadChartRepo', () => {
         ...opts
       });
       return expect(fs.existsSync(result.fullPath)).to.be.true;
-    }).timeout(4000);
+    }).timeout(10000);
   });
 
   it('works with both, an Url ending with .yaml and also just the folder src');

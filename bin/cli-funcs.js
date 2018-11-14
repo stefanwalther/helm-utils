@@ -85,7 +85,7 @@ module.exports = {
       return log(chalk.red(e));
     }
     const unzipDir = path.join(downloadResult.savePath, downloadResult.name);
-    await helmUtils.unzip({src: downloadResult.fullPath, target: unzipDir});
+    await helmUtils._unzip({src: downloadResult.fullPath, target: unzipDir});
     let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
     let images = await helmUtils.getImagesFromManifest(manifest);
 
