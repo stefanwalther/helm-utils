@@ -55,7 +55,7 @@ const formatRepoCharts = (opts) => {
         let table = new Table({
           style: {head: ['cyan']},
           head: ['Name', 'Description', 'Version', 'Created', 'When', 'Url'],
-          colWidths: [20, 40, 10, 20, 15, 70]
+          colWidths: [15, 40, 10, 12, 15, 70]
         });
         for (let e in opts.repoInfo.result.entries[c]) {
           let entry = opts.repoInfo.result.entries[c][e];
@@ -63,7 +63,7 @@ const formatRepoCharts = (opts) => {
           row.push(entry.name);
           row.push(entry.description);
           row.push(entry.version);
-          row.push(moment(entry.created).format('YYYY-MM-DD hh:mm'));
+          row.push(moment(entry.created).format('YYYY-MM-DD'));
           row.push(moment(entry.created).fromNow());
           row.push(entry.urls.join(','));
           table.push(row);
