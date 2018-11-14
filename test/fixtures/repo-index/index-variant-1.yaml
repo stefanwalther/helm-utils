@@ -1,0 +1,32 @@
+apiVersion: v1
+entries:
+  qsefe:
+  - apiVersion: v1
+    created: 2018-09-24T17:09:25.531Z
+    description: Qlik Sense Enterprise for elastic deployments
+    digest: a10fa6295547d581f0105571e87443e4ded2f8ea7172ae71ffac355edf256aee
+    home: https://www.qlik.com
+    name: qsefe
+    urls:
+    - qsefe-0.1.129.tgz
+    version: 0.1.129
+  - apiVersion: v1
+    created: 2018-07-06T11:43:08.179Z
+    description: Qlik Sense Enterprise for Elastic
+    digest: dacc3c678f817345f36c617680fbe1627414a58db3ada676bf94861219dae5f4
+    home: https://www.qlik.com
+    name: qsefe
+    urls:
+    - qsefe-0.1.36.tgz
+    version: 0.1.36
+  bdi:
+  - apiVersion: v1
+    appVersion: 0.17.0
+    created: 2018-09-24T13:51:29.531Z
+    description: Big Data Index
+    digest: af022167d402c61a5c0a893fe5f5be20207a45e663590073ed2b81e21b8d8085
+    name: bdi
+    urls:
+    - bdi-0.1.3.tgz
+    version: 0.1.3
+generated: 2018-09-24T17:09:25.531Z

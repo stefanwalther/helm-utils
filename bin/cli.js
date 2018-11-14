@@ -3,6 +3,27 @@ const fn = require('./cli-funcs');
 const yargs = require('yargs');
 
 yargs
+  .wrap(Math.min(100, yargs.terminalWidth()))
+  .command({
+    command: 'get-charts <repo-uri> [format]',
+    alias: ['gc'],
+    desc: 'Get the charts from a given chart repository.',
+    builder: yargs => {
+      yargs.positional('repoUri', {
+        type: 'string',
+        describe: 'the repository Uri'
+      }).positional('format', {
+        type: 'string',
+        describe: 'How to format the output.',
+        choices: ['table', 'json'],
+        default: 'table'
+      })
+    },
+    handler: async (argv) => {
+      await fn.upgradeCheck(argv);
+      await fn.getRepoCharts(argv)
+    }
+  })
   .command({
     command: 'get-images <chart-url> [format]',
     alias: ['gi'],
@@ -10,8 +31,13 @@ yargs
     builder: yargs => {
       yargs.positional('chartUrl', {
         type: 'string',
-        describe: 'the repo'
-      });
+        describe: 'the chart Url'
+      }).positional('format', {
+        type: 'string',
+        describe: 'How to format the output.',
+        choices: ['list', 'json'],
+        default: 'list'
+      })
     },
     handler: (argv) => {
       fn.getImages(argv);
@@ -21,12 +47,6 @@ yargs
     type: 'boolean',
     alias: ['v'],
     default: false
-  })
-  .option('format', {
-    type: 'string',
-    describe: 'How to format the output',
-    choices: ['verbose', 'json'],
-    default: 'verbose'
   })
   .demandCommand(1, 'You need ad least one command before moving on')
   .showHelpOnFail(false, 'Specify -help for available options')

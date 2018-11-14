@@ -5,24 +5,25 @@
 -   [HelmUtils][1]
     -   [downloadChartRepo][2]
         -   [Parameters][3]
-    -   [downloadChartRepo][4]
-        -   [Parameters][5]
-    -   [unzip][6]
-        -   [Parameters][7]
-        -   [Examples][8]
-    -   [getImagesFromManifest][9]
-        -   [Parameters][10]
--   [getManifestFromChart][11]
-    -   [Parameters][12]
-    -   [Examples][13]
+        -   [Examples][4]
+    -   [getRepoCharts][5]
+        -   [Parameters][6]
+    -   [getManifestFromChart][7]
+        -   [Parameters][8]
+        -   [Examples][9]
+    -   [getImagesFromManifest][10]
+        -   [Parameters][11]
+-   [ChartRepoResult][12]
+    -   [Properties][13]
+-   [ChartManifest][14]
+-   [DownloadRepoResult][15]
+    -   [Properties][16]
+-   [WalkInfo][17]
+    -   [Properties][18]
+-   [ResolveResult][19]
+    -   [Properties][20]
 
 ## HelmUtils
-
-### downloadChartRepo
-
-#### Parameters
-
--   `opts`  
 
 ### downloadChartRepo
 
@@ -30,55 +31,47 @@ Download the helm chart repo to a local folder.
 
 #### Parameters
 
--   `opts` **[object][14]** Options to use.
-    -   `opts.srcUrl` **[string][15]** The Uri of the chart package which should be downloaded to local disk.
-    -   `opts.savePath` **[string][15]** The path to download the package to. Defaults to os.temp().
-    -   `opts.saveToFile` **[string][15]** The name of the file the package should be saved as. Defaults to the `srcUrl` file-path.
-
-Returns **[Promise][16]&lt;any>** 
-
-### unzip
-
-Unzip (tar) a given file to a specific folder.
-
-#### Parameters
-
--   `opts` **[Object][14]** Options for the `unzip()` function.
-    -   `opts.src` **[String][15]** 
-    -   `opts.target` **[String][15]** 
+-   `opts` **[Object][21]** Options to use.
+    -   `opts.srcUrl` **[String][22]** The Uri of the chart package which should be downloaded to local disk.
+    -   `opts.savePath` **[String][22]** The path to download the package to. Defaults to a newly created directory in `os.temp()`.
+    -   `opts.saveToFile` **[String][22]** The name of the file the package should be saved as. Defaults to `index.yaml`'.
 
 #### Examples
 
-```javascript
-// Unzip the file `./my-file.tgz` to folder `./my-file'`.
+Downloading with default values
 
+
+```javascript
 const opts = {
-    src: './my-file.tgz'
-    target: './my-file'
-}
-await unzip(opts);
+  srcUrl: 'https://chart-repo.com/charts/chart_v1.0.0.tgz'
+};
+// returns a DownloadRepoResult object
+let downloadRepoResult = await downloadChartRepo(opts);
 ```
 
-### getImagesFromManifest
+Returns **[Promise][23]&lt;[DownloadRepoResult][24], [Error][25]>** 
 
-Returns an array of all images from a given chart manifest.
+### getRepoCharts
+
+Get the chart information of a chart-repo's index.yaml file.
 
 #### Parameters
 
--   `chartManifest`  
+-   `opts` **[Object][21]** The options for `getChartVersions()` function.
+    -   `opts.src` **[String][22]** The source to load from. This can be a local file or a Url.
 
-Returns **[Array][17]&lt;[String][15]>** Returns an array of images found in the given manifest.
+Returns **any** ChartRepoResult
 
-## getManifestFromChart
+### getManifestFromChart
 
 Returns the manifest for a given chart.
 
-### Parameters
+#### Parameters
 
--   `opts` **[Object][14]** Options for `getManifestFromChart()`.
-    -   `opts.loadFromDir` **[String][15]** The (local) directory from which the chart should be loaded from.
+-   `opts` **[Object][21]** Options for `getManifestFromChart()`.
+    -   `opts.loadFromDir` **[String][22]** The (local) directory from which the chart should be loaded from.
 
-### Examples
+#### Examples
 
 ```javascript
 const opts = {
@@ -87,7 +80,68 @@ const opts = {
 let manifest = await getManifestFromChart();
 ```
 
-Returns **ChartManifest** , to be resolved on success and rejected on failure.
+Returns **[ChartManifest][26]** , to be resolved on success and rejected on failure.
+
+### getImagesFromManifest
+
+Returns an array of all images from a given chart manifest.
+
+#### Parameters
+
+-   `chartManifest` **[ChartManifest][26]** 
+
+Returns **[Array][27]&lt;[String][22]>** Returns an array of images found in the given manifest.
+
+## ChartRepoResult
+
+Type: [Object][21]
+
+### Properties
+
+-   `meta` **[Object][21]** Some meta information
+-   `result` **[Object][21]** The result (content of the index.yaml file).
+    -   `result.apiVersion` **[string][22]** The helm's chart `apiVersion` property.
+
+## ChartManifest
+
+Type: [Object][21]
+
+## DownloadRepoResult
+
+Type: [Object][21]
+
+### Properties
+
+-   `srcUrl` **[String][22]** The passed in `srcUrl` property.
+-   `savePath` **[String][22]** The passed in `savePath` property.
+-   `saveToFile` **[String][22]** The passed in `saveToFile` property.
+-   `fullPath` **[String][22]** The full path of the downloaded file.
+-   `name` **[String][22]** The filename.
+-   `ext` **[String][22]** The filename's extension.
+
+## WalkInfo
+
+Type: [object][21]
+
+### Properties
+
+-   `path` **[string][22]** The file path.
+-   `name` **[string][22]** The file basename.
+-   `type` **[string][22]** Either `folder` or `file`.
+-   `isDir` **[boolean][28]** Whether the current item is a directory or not.
+-   `extname` **[string][22]** The file's extension.
+-   `object` **[object][21]** The object in case we are dealing with a .yaml file.
+-   `children` **[array][27]&lt;[object][21]>** The children for the given item.
+
+## ResolveResult
+
+Type: [Object][21]
+
+### Properties
+
+-   `isUrl` **[boolean][28]** Whether the given `src` is an online Url or not.
+-   `isFile` **[boolean][28]** Whether the given `src` is a local file or not.
+-   `is` **[string][22]** The kind of `src`. Can be `online`, `local` or `unknown`.
 
 [1]: #helmutils
 
@@ -95,30 +149,52 @@ Returns **ChartManifest** , to be resolved on success and rejected on failure.
 
 [3]: #parameters
 
-[4]: #downloadchartrepo-1
+[4]: #examples
 
-[5]: #parameters-1
+[5]: #getrepocharts
 
-[6]: #unzip
+[6]: #parameters-1
 
-[7]: #parameters-2
+[7]: #getmanifestfromchart
 
-[8]: #examples
+[8]: #parameters-2
 
-[9]: #getimagesfrommanifest
+[9]: #examples-1
 
-[10]: #parameters-3
+[10]: #getimagesfrommanifest
 
-[11]: #getmanifestfromchart
+[11]: #parameters-3
 
-[12]: #parameters-4
+[12]: #chartreporesult
 
-[13]: #examples-1
+[13]: #properties
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[14]: #chartmanifest
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[15]: #downloadreporesult
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[16]: #properties-1
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[17]: #walkinfo
+
+[18]: #properties-2
+
+[19]: #resolveresult
+
+[20]: #properties-3
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[24]: #downloadreporesult
+
+[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error
+
+[26]: #chartmanifest
+
+[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

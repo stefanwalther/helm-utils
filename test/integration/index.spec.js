@@ -1,8 +1,10 @@
-const helmUtils = require('./../../src/index');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const _ = require('lodash');
+const uuid = require('uuid/v1');
+
+const helmUtils = require('./../../src/index');
 
 describe('[integration-test]', () => {
   // Todo: re-organize the test a bit, to also be able to test other repos
@@ -10,7 +12,7 @@ describe('[integration-test]', () => {
     const chartName = 'qsefe-0.1.36.tgz';
     const opts = {
       srcUrl: `https://qlik.bintray.com/stable/${chartName}`,
-      savePath: os.tmpdir()
+      savePath: path.resolve(os.tmpdir(), uuid())
     };
 
     it('downloads a chart tgz and returns an object', async () => {
@@ -24,32 +26,33 @@ describe('[integration-test]', () => {
     it('downloads the chart and saves it to the expected folder', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       expect(fs.existsSync(result.fullPath)).to.be.true;
-    });
+    }).timeout(5000);
 
     it('unzips properly', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, result.name);
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       expect(fs.existsSync(unzipDir));
-    });
+    }).timeout(5000);
 
     it('can return a proper manifest', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, 'qsefe-0.1.36');
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       expect(manifest).to.be.an('object');
       expect(manifest).to.have.a.property('name').to.be.equal(result.name);
       expect(manifest).to.have.a.property('children').to.be.an('array');
-    });
+    }).timeout(5000);
+
     it('returns the images being used', async () => {
       let result = await helmUtils.downloadChartRepo(opts);
       const unzipDir = path.join(result.savePath, result.name);
-      await helmUtils.unzip({src: result.fullPath, target: unzipDir});
+      await helmUtils._unzip({src: result.fullPath, target: unzipDir});
       let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
       let images = await helmUtils.getImagesFromManifest(manifest);
       expect(images).to.exist.and.to.be.an('array');
-    });
+    }).timeout(5000);
   });
 
   it('handles properly a 404 of a resource');
