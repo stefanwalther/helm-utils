@@ -1,6 +1,6 @@
 const log = console.log;
 const chalk = require('chalk');
-const helmUtils = require('./../src/helm-utils');
+const HelmUtils = require('./../src/helm-utils');
 const os = require('os');
 const path = require('path');
 const Table = require('cli-table');
@@ -81,22 +81,22 @@ module.exports = {
 
     let downloadResult;
     try {
-      downloadResult = await helmUtils.downloadChartRepo({srcUrl: argv.chartUrl, savePath: os.tmpdir()});
+      downloadResult = await HelmUtils.downloadChartRepo({srcUrl: argv.chartUrl, savePath: os.tmpdir()});
     }
     catch (e) {
       return log(chalk.red(e));
     }
     const unzipDir = path.join(downloadResult.savePath, downloadResult.name);
-    await helmUtils._unzip({src: downloadResult.fullPath, target: unzipDir});
-    let manifest = await helmUtils.getManifestFromChart({loadFromDir: unzipDir});
-    let images = await helmUtils.getImagesFromManifest(manifest);
+    await HelmUtils._unzip({src: downloadResult.fullPath, target: unzipDir});
+    let manifest = await HelmUtils.getManifestFromChart({loadFromDir: unzipDir});
+    let images = await HelmUtils.getImagesFromManifest(manifest);
 
     formatGetImages({argv, images})
   },
 
   getRepoCharts: async (argv) => {
 
-    let result = await helmUtils.getRepoCharts({src: argv.repoUri});
+    let result = await HelmUtils.getRepoCharts({src: argv.repoUri});
     // console.dir(result, {depth: null});
 
     formatRepoCharts({argv, repoInfo: result});

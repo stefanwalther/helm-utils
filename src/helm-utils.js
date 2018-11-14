@@ -19,6 +19,8 @@ const DetailedError = require('./detailed-error');
  */
 class HelmUtils {
 
+  // Todo: The result needs to reflect whether we have successfully downloaded a zip file ...
+  // Todo: Can be completely simplified as we are not downloading a binary file!
   /**
    * Download the helm chart repo to a local folder.
    *
@@ -40,8 +42,6 @@ class HelmUtils {
    * @async
    * @static
    */
-  // Todo: The result needs to reflect whether we have successfully downloaded a zip file ...
-  // Todo: Can be completely simplified as we are not downloading a binary file!
   static async downloadChartRepo(opts) {
 
     if (!opts || _.isEmpty(opts)) {
@@ -110,6 +110,18 @@ class HelmUtils {
    * @param {Object} opts - The options for `getChartVersions()` function.
    * @param {String} opts.src - The source to load from. This can be a local file or a Url.
    *
+   * @example
+   *
+   * const HelmUtils = require('helm-utils');
+   *
+   * (async () => {
+   *  const opts = {
+   *    src: 'https://qlik.bintray.com/stable/qsefe-0.2.116.tgz'
+   *  };
+   *  let response = await HelmUtils.getRepoCharts(opts);
+   *  console.log(response.result.entries.qsefe[0].urls);
+   * })();
+   *
    * @return ChartRepoResult
    *
    * @static
@@ -158,76 +170,6 @@ class HelmUtils {
     }
 
     return r;
-  }
-
-  static _getRepoChartValidation(opts) {
-    if (!opts || _.isEmpty(opts)) {
-      throw new Error('Argument `opts` is undefined or empty.');
-    }
-    if (!opts.src || _.isEmpty(opts.src)) {
-      throw new Error('Argument `opts.src` is undefined or empty.');
-    }
-  }
-
-  /**
-   * Unzip (tar) a given file to a specific folder.
-   *
-   * @param {Object} opts - The options for the `unzip()` function.
-   * @param {String} opts.src - The source file (a .tgz file).
-   * @param {String} opts.target - The local target directory to unpack the .tgz file to.
-   *
-   * @example
-   *
-   * // Unzip the file `./my-file.tgz` to folder `./my-file'`.
-   *
-   * const opts = {
-   *     src: './my-file.tgz'
-   *     target: './my-file'
-   * }
-   * await unzip(opts);
-   *
-   *
-   * @async
-   * @static
-   * @private // just to hide in JSDocs
-   */
-  static async _unzip(opts) {
-
-    if (!opts || _.isEmpty(opts)) {
-      throw new Error('Argument `opts` is not defined or empty.');
-    }
-    if (!opts.src) {
-      throw new Error('Argument `opts.src` is not defined or empty.');
-    }
-    if (!opts.target) {
-      throw new Error('Argument `opts.target` is not defined or empty.');
-    }
-
-    utils.ensureDir(opts.target);
-
-    return new Promise((resolve, reject) => {
-      fs.createReadStream(opts.src)
-        .on('error', err => {
-          console.error(err);
-          return reject(err);
-        })
-        .pipe(zlib.Unzip()) // eslint-disable-line new-cap
-        .on('error', e => {
-          console.error(e);
-          return reject(e);
-        })
-        .pipe(tar.x({
-          cwd: opts.target,
-          strip: 1
-        }))
-        .on('error', e => {
-          console.error(e);
-          return reject(e);
-        })
-        .on('end', () => {
-          return resolve(true);
-        });
-    });
   }
 
   /**
@@ -317,11 +259,13 @@ class HelmUtils {
   /*                             PRIVATE METHODS                             */
   /* ----------------------------------------------------------------------- */
 
-  static _loadFromYaml(src) {
-
-    // Todo: catch errors and throw a custom error here.
-    return yaml.safeLoad(fs.readFileSync(src, 'utf8'));
-
+  static _getRepoChartValidation(opts) {
+    if (!opts || _.isEmpty(opts)) {
+      throw new Error('Argument `opts` is undefined or empty.');
+    }
+    if (!opts.src || _.isEmpty(opts.src)) {
+      throw new Error('Argument `opts.src` is undefined or empty.');
+    }
   }
 
   // Todo: Maybe nicer instead of having `children`: https://stackoverflow.com/questions/15690706/recursively-looping-through-an-object-to-build-a-property-list
@@ -336,41 +280,6 @@ class HelmUtils {
    * @property {object} object - The object in case we are dealing with a .yaml file.
    * @property {array<object>} children - The children for the given item.
    */
-
-  /**
-   *
-   * @param {String} filePath - The path to the file.
-   * @returns {WalkInfo}
-   *
-   * @private
-   * @static
-   */
-  static _walkChart(filePath) {
-
-    let stats = fs.lstatSync(filePath);
-
-    let info = {
-      path: filePath,
-      name: path.basename(filePath)
-    };
-
-    if (stats.isDirectory()) {
-      info.type = 'folder';
-      info.isDir = true;
-      info.children = fs.readdirSync(filePath).map(function (child) {
-        return HelmUtils._walkChart(filePath + '/' + child);
-      });
-    } else {
-      info.type = 'file';
-      info.isDir = false;
-      info.extname = path.extname(filePath);
-      if (path.basename(filePath) === 'values.yaml') {
-        info.object = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'));
-      }
-    }
-
-    return info;
-  }
 
   // https://stackoverflow.com/questions/48171842/how-to-write-a-recursive-flat-map-in-javascript
   /**
@@ -426,6 +335,13 @@ class HelmUtils {
     return undefined;
   }
 
+  static _loadFromYaml(src) {
+
+    // Todo: catch errors and throw a custom error here.
+    return yaml.safeLoad(fs.readFileSync(src, 'utf8'));
+
+  }
+
   /**
    * @typedef {Object} ResolveResult - The result.
    * @property {boolean} isUrl - Whether the given `src` is an online Url or not.
@@ -469,6 +385,102 @@ class HelmUtils {
         error: e
       });
     }
+  }
+
+  /**
+   * Unzip (tar) a given file to a specific folder.
+   *
+   * @param {Object} opts - The options for the `unzip()` function.
+   * @param {String} opts.src - The source file (a .tgz file).
+   * @param {String} opts.target - The local target directory to unpack the .tgz file to.
+   *
+   * @example
+   *
+   * // Unzip the file `./my-file.tgz` to folder `./my-file'`.
+   *
+   * const opts = {
+   *     src: './my-file.tgz'
+   *     target: './my-file'
+   * }
+   * await unzip(opts);
+   *
+   *
+   * @async
+   * @static
+   * @private // just to hide in JSDocs
+   */
+  static async _unzip(opts) {
+
+    if (!opts || _.isEmpty(opts)) {
+      throw new Error('Argument `opts` is not defined or empty.');
+    }
+    if (!opts.src) {
+      throw new Error('Argument `opts.src` is not defined or empty.');
+    }
+    if (!opts.target) {
+      throw new Error('Argument `opts.target` is not defined or empty.');
+    }
+
+    utils.ensureDir(opts.target);
+
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(opts.src)
+        .on('error', err => {
+          console.error(err);
+          return reject(err);
+        })
+        .pipe(zlib.Unzip()) // eslint-disable-line new-cap
+        .on('error', e => {
+          console.error(e);
+          return reject(e);
+        })
+        .pipe(tar.x({
+          cwd: opts.target,
+          strip: 1
+        }))
+        .on('error', e => {
+          console.error(e);
+          return reject(e);
+        })
+        .on('end', () => {
+          return resolve(true);
+        });
+    });
+  }
+
+  /**
+   *
+   * @param {String} filePath - The path to the file.
+   * @returns {WalkInfo}
+   *
+   * @private
+   * @static
+   */
+  static _walkChart(filePath) {
+
+    let stats = fs.lstatSync(filePath);
+
+    let info = {
+      path: filePath,
+      name: path.basename(filePath)
+    };
+
+    if (stats.isDirectory()) {
+      info.type = 'folder';
+      info.isDir = true;
+      info.children = fs.readdirSync(filePath).map(function (child) {
+        return HelmUtils._walkChart(filePath + '/' + child);
+      });
+    } else {
+      info.type = 'file';
+      info.isDir = false;
+      info.extname = path.extname(filePath);
+      if (path.basename(filePath) === 'values.yaml') {
+        info.object = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'));
+      }
+    }
+
+    return info;
   }
 
 }
