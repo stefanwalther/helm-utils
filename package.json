@@ -15,7 +15,7 @@
     "url": "git+https://github.com/stefanwalther/helm-utils.git"
   },
   "license": "MIT",
-  "author": "Stefan Walther <swr.nixda@gmail.com> (http://qliksite.io)",
+  "author": "Stefan Walther",
   "main": "./src/index.js",
   "bin": {
     "helm-utils": "./bin/cli.js"
