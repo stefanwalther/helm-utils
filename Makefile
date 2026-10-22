@@ -13,7 +13,3 @@ gen-api-docs: 										## Generate the API docs to ./docs/api.md
 gen-api-docs-watch: 										## Generate the API docs to ./docs/api.md
 	node ./node_modules/.bin/documentation build --format md --output ./docs/api.md --watch
 .PHONY: gen-api-docs-watch
-
-gen-readme: gen-api-docs					## Generate README.md (using docker-verb)
-	docker run --rm -v ${PWD}:/opt/verb stefanwalther/verb
-.PHONY: gen-readme
